@@ -1,12 +1,32 @@
-##' Extreme Downregulation of chromosome Y (EDY)
-##'
-##' Detection of individuals with EDY
-##' @title EDY
-##' @param x 
-##' @param 
-##' 
-##' @export getEDY
-##' @return ...
+#' Extreme Downregulation of chromosome Y (EDY)
+#'
+#' Detection of individuals with EDY
+#' @title EDY
+#' @param x An ExpressionSet from microarray experiment.
+#' @param gender.var The name of the column in the table of phenotype
+#'   (\code{phenoData}) that contains the gender of the individual.
+#' @param male.key The symbol that idendtifies males (eg.: "male" or "M").
+#' @param gene.key The name of the column that contains the Gene Symbol in the
+#'   table of features (\code{featureData}).
+#' @param log Logical. It is set to \code{TRUE} if the gene expression values
+#'   are given in a logarithmic scale in the ExpressionSet and \code{FALSE}
+#'   otherwise. Default is \code{TRUE}.
+#' @param group.var The name of the column that contains the information about
+#'   if the individual is case or control
+#' @param control.key The symbol that identifies control group (eg.: "control")
+#' @export getEDY
+#' @return A list containing 4 objects: 
+#' \itemize{ 
+#'   \item \code{Ry}: a matrix
+#'     with the expression of each gene in chromosome Y divided by the mean
+#'     expression of autosomal genes for each individual. 
+#'   \item \code{EDY}: a factor with two levels, \code{YES} and \code{NO}, 
+#'     that indicates if the individual has EDY or not.
+#'   \item \code{threshold}: a number indicating the threshold from which down 
+#'     an individual is considered to have EDY. 
+#'   \item \code{eSet}: the ExpressionSet
+#'     form the input but with the column hgnc_symbol added to featureData. 
+#'   }
 
 getEDY <- function(x, gender.var, male.key, gene.key, log = TRUE, group.var, control.key, ...){
   

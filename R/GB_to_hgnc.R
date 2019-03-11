@@ -1,20 +1,25 @@
 library('biomaRt')
 library('org.Hs.eg.db')
 
-##' Obtaining hgnc symbol from genBank accession number
+##' Obtaining hgnc symbol and entrezgene from genBank accession number
 ##'
-##' Obtaining HUGO gene nomenclature committee (hgnc) symbol from genBank accession number
-##' @title GB_ACC to hgnc_symbol
-##' @param x 
-##' @param 
-##' 
-##' @export getEDY
-##' @return ...
+##' Get HUGO gene nomenclature committee (hgnc) symbol from genBank accession
+##' number in an ExpressionSet table of features
+##' @title genBank AN to hgnc symbol
+##' @param x The table of features of an ExpressionSet or any data.frame.
+##' @param genBank.col The name of the column that contains the genBank
+##'   accession numbers.
+##'
+##' @export GB_to_hgnc
+##' @return A data.frame containing the previous information in \code{x} plus 5
+##'   more columns: \code{start_position} (of the gene), \code{end_position} (of
+##'   the gene), \code{chromosome_name}, \code{hgnc_symbol} and
+##'   \code{entrezgene}
 
-GB_to_hgnc <- function(fdata, GB.column, ...){
+GB_to_hgnc <- function(fdata, genBank.col, ...){
   
   list_entrez_GB <- as.list(org.Hs.egACCNUM2EG)
-  query <- fdata[,GB.column]
+  query <- fdata[, genBank.col]
   GB_entrezgenes <- list_entrez_GB[query]
   GB_entrezgenes <- GB_entrezgenes[!is.na(names(GB_entrezgenes))]
 
@@ -35,7 +40,7 @@ GB_to_hgnc <- function(fdata, GB.column, ...){
   ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl")
 
   hgnc_symbols <- getBM(attributes = c("start_position", "end_position", "chromosome_name", 
-                                       "hgnc_symbol", "entrezgene", ), filters = "entrezgene",
+                                       "hgnc_symbol", "entrezgene"), filters = "entrezgene",
                         values = entrezgenes, mart = ensembl)
 
   #Join to fData
