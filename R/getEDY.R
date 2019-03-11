@@ -1,4 +1,14 @@
-getEDY <- function(x, gender.var = "NA", male.key, gene.key, log = TRUE, ...){
+##' Extreme Downregulation of chromosome Y (EDY)
+##'
+##' Detection of individuals with EDY
+##' @title SVD using an incremental SVD algorithm.
+##' @param x 
+##' @param 
+##' 
+##' @export getEDY
+##' @return ...
+getEDY <- function(x, gender.var = "NA", male.key, gene.key, 
+                   log = TRUE, ...){
   
   #Filter males in the expression set
   if (gender.var!="NA") {
