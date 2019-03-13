@@ -1,25 +1,26 @@
-library('biomaRt')
-library('org.Hs.eg.db')
-
 ##' Obtaining hgnc symbol and entrezgene from genBank accession number
 ##'
 ##' Get HUGO gene nomenclature committee (hgnc) symbol from genBank accession
-##' number in an ExpressionSet table of features
+##' number, as well as the start and end position of the gene, the chromosome
+##' and the entrezgene (NCBI gene ID)
 ##' @title genBank AN to hgnc symbol
-##' @param x The table of features of an ExpressionSet or any data.frame.
+##' @param x The table of features of an ExpressionSet or any data.frame or
+##'   matrix.
 ##' @param genBank.col The name of the column that contains the genBank
 ##'   accession numbers.
-##'
+##' 
+##' @import biomaRt
+##' @import org.Hs.eg.db
 ##' @export GB_to_hgnc
-##' @return A data.frame containing the previous information in \code{x} plus 5
+##' @return A \code{data.frame} containing the previous information in \code{x} plus 5
 ##'   more columns: \code{start_position} (of the gene), \code{end_position} (of
 ##'   the gene), \code{chromosome_name}, \code{hgnc_symbol} and
 ##'   \code{entrezgene}
 
-GB_to_hgnc <- function(fdata, genBank.col, ...){
+GB_to_hgnc <- function(x, genBank.col, ...){
   
   list_entrez_GB <- as.list(org.Hs.egACCNUM2EG)
-  query <- fdata[, genBank.col]
+  query <- x[, genBank.col]
   GB_entrezgenes <- list_entrez_GB[query]
   GB_entrezgenes <- GB_entrezgenes[!is.na(names(GB_entrezgenes))]
 
@@ -34,7 +35,7 @@ GB_to_hgnc <- function(fdata, genBank.col, ...){
   colnames(matrix_entr_GB) <- c("entrezgene", "GB_ACC")
   
   #Join to fData
-  fdata <-  merge(matrix_entr_GB, fdata, by.x = "GB_ACC", by.y = "GB_ACC")
+  x <-  merge(matrix_entr_GB, x, by.x = "GB_ACC", by.y = genBank.col)
   
   # Get hgnc_symbol from entrezgene
   ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl")
@@ -44,10 +45,10 @@ GB_to_hgnc <- function(fdata, genBank.col, ...){
                         values = entrezgenes, mart = ensembl)
 
   #Join to fData
-  fdata <- merge(hgnc_symbols, fdata, by.x = "entrezgene", by.y = "entrezgene")
+  x <- merge(hgnc_symbols, x, by.x = "entrezgene", by.y = "entrezgene")
   #Delete duplicated GB_ACCs
-  fdata <- fdata[!duplicated(fdata[,"GB_ACC"]),]
+  x <- x[!duplicated(x[,"GB_ACC"]),]
   
   #output
-  fdata
+  x
 }

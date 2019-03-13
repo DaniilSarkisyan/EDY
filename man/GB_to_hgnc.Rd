@@ -2,18 +2,19 @@
 % Please edit documentation in R/GB_to_hgnc.R
 \name{GB_to_hgnc}
 \alias{GB_to_hgnc}
-\title{GB_ACC to hgnc_symbol}
+\title{genBank AN to hgnc symbol}
 \usage{
-GB_to_hgnc(fdata, genBank.col, ...)
+GB_to_hgnc(x, genBank.col, ...)
 }
 \arguments{
+\item{x}{The table of features of an ExpressionSet or any data.frame or
+matrix.}
+
 \item{genBank.col}{The name of the column that contains the genBank
 accession numbers.}
-
-\item{x}{The table of features of an ExpressionSet or any data.frame.}
 }
 \value{
-A data.frame containing the previous information in \code{x} plus 5
+A \code{data.frame} containing the previous information in \code{x} plus 5
   more columns: \code{start_position} (of the gene), \code{end_position} (of
   the gene), \code{chromosome_name}, \code{hgnc_symbol} and
   \code{entrezgene}
@@ -23,5 +24,6 @@ Obtaining hgnc symbol and entrezgene from genBank accession number
 }
 \details{
 Get HUGO gene nomenclature committee (hgnc) symbol from genBank accession
-number in an ExpressionSet table of features
+number, as well as the start and end position of the gene, the chromosome
+and the entrezgene (NCBI gene ID)
 }

@@ -1,11 +1,11 @@
 #' Extreme Downregulation of chromosome Y (EDY)
 #'
 #' Detection of individuals with EDY
-#' @title EDY
+#' @title getEDY
 #' @param x An ExpressionSet from microarray experiment.
 #' @param gender.var The name of the column in the table of phenotype
 #'   (\code{phenoData}) that contains the gender of the individual.
-#' @param male.key The symbol that idendtifies males (eg.: "male" or "M").
+#' @param male.key The symbol that idendtifies males (eg.: "male", "M", ...).
 #' @param gene.key The name of the column that contains the Gene Symbol in the
 #'   table of features (\code{featureData}).
 #' @param log Logical. It is set to \code{TRUE} if the gene expression values

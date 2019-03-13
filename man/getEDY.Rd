@@ -2,7 +2,7 @@
 % Please edit documentation in R/getEDY.R
 \name{getEDY}
 \alias{getEDY}
-\title{EDY}
+\title{getEDY}
 \usage{
 getEDY(x, gender.var, male.key, gene.key, log = TRUE, group.var,
   control.key, ...)
@@ -13,7 +13,7 @@ getEDY(x, gender.var, male.key, gene.key, log = TRUE, group.var,
 \item{gender.var}{The name of the column in the table of phenotype
 (\code{phenoData}) that contains the gender of the individual.}
 
-\item{male.key}{The symbol that idendtifies males (eg.: "male" or "M").}
+\item{male.key}{The symbol that idendtifies males (eg.: "male", "M", ...).}
 
 \item{gene.key}{The name of the column that contains the Gene Symbol in the
 table of features (\code{featureData}).}
