@@ -85,16 +85,16 @@ If your dataset does not contain information about the gene symbol, this package
 
 ```{r GB_to_hgnc}
 # Example dataset 
-data2 <- getGEO('40732')
-eSet2 <- data2[[1]]
+data <- getGEO('40732')
+eSet <- data[[1]]
 
 # genBank accession numbers 
-head(fData(eSet2)) # "GB_ACC" 
+head(fData(eSet)) # "GB_ACC" 
 
 # Get hgnc symbols
-fData(eSet2) <- GB_to_hgnc(x = fData(eSet2), genBank.col = "GB_ACC")
+fData(eSet) <- GB_to_hgnc(x = fData(eSet), genBank.col = "GB_ACC")
 
-head(fData(eSet2))
+head(fData(eSet))
 ```
 
 Now we can use `getEDY()` with `gene.key = "hgnc_symbol"`.
