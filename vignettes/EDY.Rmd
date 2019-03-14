@@ -1,30 +1,105 @@
 ---
-title: "EDYvignette"
+title: "EDY usage"
 author: "Gema Rojas"
-date: "11 de marzo de 2019"
-output: html_document
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{EDY usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 ```
 
-## R Markdown
+## Purpose of this package
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The aim of this package is to help the user to detect individuals who present extreme downregulation of chromosome Y (EDY) in microarray experiments.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Get the necessary information to assess EDY
 
-```{r cars}
-summary(cars)
+In order to know which individuals have EDY, we need to look for some information in our data. For this vignette, we will use the following dataset as an example:
+
+```{r data, echo = FALSE}
+# Loading data (microarray ExpresionSet)
+library('GEOquery')
+data <- getGEO('GSE73578')
+eSet <- data[[1]]
 ```
 
-## Including Plots
+We need to know:
 
-You can also embed plots, for example:
+- Wether the gene expression in `assayData` is given in a logarithmic scale or not. 
+- Which column from `featureData` contains the `Gene symbol`.
+- Which column from `phenoData`contains the information about the `gender` and the symbol that codes for `males`.
+- Which column from `phenoData` contains the information about which individuals belongs to control group, and the symbol that codes for control. 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r info}
+# assayData. In this case, the expression is logarithmic
+head(exprs(eSet))
+
+# featureData. In this case, the gene symbol is in the column 'Gene Symbol'
+head(fData(eSet))
+
+# phenoData. In this example: gender column = 'Sex:ch1', males = 'M'
+# We will not consider any control group
+head(pData(eSet))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Assess EDY
+
+Now, we can apply `getEDY(...)` to know which individuals have the condition:
+
+```{r getEDY}
+library('EDY')
+
+output.GSE73578 <- getEDY(x = eSet, gender.var = 'Sex:ch1',
+                       male.key ='M', 
+                       gene.key = 'Gene Symbol', log = T)
+
+# How many individuals do and do not have EDY:
+table(output.GSE73578$EDY)
+
+# Threshold from which below it is considered EDY:
+threshold <- out.GSE73578$threshold
+threshold
+
+## Plot the expression of chrY realtive to the rest of the genome in each individual:
+plot(apply(out.GSE73578$Ry, 1, mean), xlab = "Individuals", ylab = "chrY / autosomomes")
+abline(h=threshold, col="blue")
+```
+
+## Missing information
+
+### Gender of individuals
+
+In case your dataset does not contain information about the sex of the individuals, you can assess it using *massiR*.
+
+### Gene Symbol
+
+If your dataset does not contain information about the gene symbol, this package provide a function to get the hgnc (HUGO gene nomenclature committee) symbols from genBank accession numbers. To use it, we need to know which column from `featureData` has the genBank accession numbers.
+
+```{r GB_to_hgnc}
+# Example dataset 
+data2 <- getGEO('40732')
+eSet2 <- data2[[1]]
+
+# genBank accession numbers 
+head(fData(eSet2)) # "GB_ACC" 
+
+# Get hgnc symbols
+fData(eSet2) <- GB_to_hgnc(x = fData(eSet2), genBank.col = "GB_ACC")
+
+head(fData(eSet2))
+```
+
+Now we can use `getEDY()` with `gene.key = "hgnc_symbol"`.
+
+If your dataset does not have gene symbols nor genBank accession numbers, you can try to get this information from other columns in `featureData` using *biomaRt*.
+
+[massiR]: https://bioconductor.org/packages/release/bioc/html/massiR.html
+[biomaRt]: https://bioconductor.org/packages/release/bioc/html/biomaRt.html

@@ -2,5 +2,6 @@
 
 export(GB_to_hgnc)
 export(getEDY)
-import(biomaRt)
 import(org.Hs.eg.db)
+importFrom(biomaRt,getBM)
+importFrom(biomaRt,useMart)

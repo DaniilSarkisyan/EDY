@@ -9,7 +9,7 @@
 ##' @param genBank.col The name of the column that contains the genBank
 ##'   accession numbers.
 ##' 
-##' @import biomaRt
+##' @importFrom biomaRt useMart getBM
 ##' @import org.Hs.eg.db
 ##' @export GB_to_hgnc
 ##' @return A \code{data.frame} containing the previous information in \code{x} plus 5
@@ -38,7 +38,7 @@ GB_to_hgnc <- function(x, genBank.col, ...){
   x <-  merge(matrix_entr_GB, x, by.x = "GB_ACC", by.y = genBank.col)
   
   # Get hgnc_symbol from entrezgene
-  ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl")
+  ensembl <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
 
   hgnc_symbols <- getBM(attributes = c("start_position", "end_position", "chromosome_name", 
                                        "hgnc_symbol", "entrezgene"), filters = "entrezgene",
