@@ -16,27 +16,33 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Purpose of this package
+# Purpose of this package
 
-The aim of this package is to help the user to detect individuals who present extreme downregulation of chromosome Y (EDY) in microarray experiments.
+The aim of this package is to help the user to detect individuals who present extreme downregulation of chromosome Y (EDY) from microarray experiments. The EDY is computed by .....
 
-## Get the necessary information to assess EDY
+# Get the necessary information to assess EDY
 
-In order to know which individuals have EDY, we need to look for some information in our data. For this vignette, we will use the following dataset as an example:
+EDY can be computed using `getEDY()` function. The main input is an object of class `ExpressionSet` The dataset passed through this function requires some information including:
 
-```{r data, echo = FALSE}
-# Loading data (microarray ExpresionSet)
-library('GEOquery')
-data <- getGEO('GSE73578')
-eSet <- data[[1]]
+- Whether the gene expression (accessed with `exprs`) is in logarithmic scale or not. 
+- Which column from the annotation (accessed with `fData`) contains the `Gene symbol`.
+- Which column from the metadata (accessed with `pData`) contains the information about the `gender` and the symbol that codes for `males`.
+- In case of having a case/control study, which column from the metadata (accessed with `pData`) contains the information about which individuals belongs to control group, and the symbol that codes for control. 
+
+Let us illustrate how to compute EDY for a real data set available at GEO about .... (GEO accesion number GSE73578). Data can be downloaded into R by
+
+```{r data, eval = FALSE}
+library(GEOquery)
+gse73578 <- getGEO("GSE73578")[[1]]
 ```
 
-We need to know:
+In order to facilitate reproducibility, we have also include this `ExpressionSet` into our package that is loaded by default. We can visualize the content by:
 
-- Wether the gene expression in `assayData` is given in a logarithmic scale or not. 
-- Which column from `featureData` contains the `Gene symbol`.
-- Which column from `phenoData`contains the information about the `gender` and the symbol that codes for `males`.
-- Which column from `phenoData` contains the information about which individuals belongs to control group, and the symbol that codes for control. 
+```{r load_eSet}
+gse73578
+```
+
+
 
 ```{r info}
 # assayData. In this case, the expression is logarithmic
@@ -52,25 +58,24 @@ head(pData(eSet))
 
 ## Assess EDY
 
-Now, we can apply `getEDY(...)` to know which individuals have the condition:
+Now, we can apply `getEDY()` to know which individuals have the condition:
 
 ```{r getEDY}
-library('EDY')
+library(EDY)
 
-output.GSE73578 <- getEDY(x = eSet, gender.var = 'Sex:ch1',
+edy.gse73578 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
                        male.key ='M', 
-                       gene.key = 'Gene Symbol', log = T)
+                       gene.key = 'Gene Symbol', log = TRUE)
 
 # How many individuals do and do not have EDY:
-table(output.GSE73578$EDY)
+table(edy.gse73578$EDY)
 
 # Threshold from which below it is considered EDY:
-threshold <- out.GSE73578$threshold
+threshold <- edy.gse73578$threshold
 threshold
 
 ## Plot the expression of chrY realtive to the rest of the genome in each individual:
-plot(apply(out.GSE73578$Ry, 1, mean), xlab = "Individuals", ylab = "chrY / autosomomes")
-abline(h=threshold, col="blue")
+plot(edy.gse73578)
 ```
 
 ## Missing information

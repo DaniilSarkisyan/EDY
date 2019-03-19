@@ -75,6 +75,7 @@ getEDY <- function(x, gender.var, male.key, gene.key, log = TRUE, group.var, con
   #output
   names(EDY) <- names(EDYcontinuous)
   ans <- list(Ry=t(Ry), EDY=EDY, threshold=thresh, eSet=x)
+  class(ans) <- "EDY"
   ans
 }
 

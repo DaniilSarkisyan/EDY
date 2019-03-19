@@ -7,6 +7,7 @@ Maintainer: Gema Rojas Granado <gemarojasgranado@gmail.com>
 Description: Detection of individuals with EDY and some helpful 
     functions to prepare the data for the detection.
 License: MIT license
+Depends: Biobase
 Imports: 
     biomaRt,
     org.Hs.eg.db
