@@ -28,7 +28,7 @@
 #'     form the input but with the column hgnc_symbol added to featureData. 
 #'   }
 
-getEDY <- function(x, gender.var, male.key, gene.key, log = TRUE, group.var, control.key, ...){
+getEDY1 <- function(x, gender.var, male.key, gene.key, log = TRUE, group.var, control.key, ...){
   
   #Filter males in the expression set
   if (!missing(gender.var)) {

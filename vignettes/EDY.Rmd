@@ -71,8 +71,7 @@ edy.gse73578 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
 table(edy.gse73578$EDY)
 
 # Threshold from which below it is considered EDY:
-threshold <- edy.gse73578$threshold
-threshold
+edy.gse73578$threshold
 
 ## Plot the expression of chrY realtive to the rest of the genome in each individual:
 plot(edy.gse73578)
