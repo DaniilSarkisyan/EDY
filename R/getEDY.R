@@ -49,12 +49,16 @@ getEDY <- function(x, gender.var, male.key, gene.key, log = TRUE, group.var, con
   
   #Add column with the hgnc symbol information to fData
   if (gene.key != "hgnc_symbol"){
-      fData(x) <- merge(annot, fData(x), by.x = "hgnc_symbol", by.y = gene.key)}
+    fData(x)$id.feature <- featureNames(x)
+    fData(x) <- merge(EDY::annot, fData(x), 
+                      by.x = "hgnc_symbol", 
+                      by.y = gene.key)
+    }
   
   annot.expr <- fData(x)
   
   #Select from genes in gene.expr those that we know the hgnc symbol
-  gene.expr <- exprs(x)[rownames(exprs(x))%in%annot.expr[, "ID"],]
+  gene.expr <- exprs(x)[rownames(exprs(x))%in%annot.expr$id.feature,]
   #Replace gene ID for hgnc symbol
   rownames(gene.expr) <- annot.expr[, 'hgnc_symbol']
   #Select those genes that belong to chrY
@@ -64,7 +68,8 @@ getEDY <- function(x, gender.var, male.key, gene.key, log = TRUE, group.var, con
   
   #Apply EDY formulae: 
   if (log) {
-    Ry <- sweep(exprY, 2, FUN="-", apply(exprRef, 2, mean))
+    Ry <- sweep(exprY, 2, FUN="-", 
+                apply(exprRef, 2, mean))
   }else{ 
     Ry <- sweep(log2(exprY), 2, FUN="-", 
                 apply(log2(exprRef), 2, mean))
