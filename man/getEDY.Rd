@@ -45,5 +45,5 @@ A list containing 4 objects:
 Extreme Downregulation of chromosome Y (EDY)
 }
 \details{
-Detection of individuals with EDY
+Detection of individuals with EDY from transcriptomic data
 }

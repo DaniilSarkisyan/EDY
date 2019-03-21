@@ -1,11 +1,22 @@
-
+#' Prediction of Extreme Downregulation of chromosome Y (EDY) 
+#' from methylation data
+#'
+#' Predicts individuals' EDY status
+#' @title predictEDY
+#' @param x A matrix with CpGs in rows, samples in columns and 
+#' CpG names in the rowname or a data.frame with individuals/samples
+#' in columns, being the first column the CpG name or an ExpressionSet.ontrol")
+#' @import Biobase
+#' @export predictEDY
+#' @return A vector with EDY status (No, Yes).
+#' 
 predictEDY <- function(x, ...){
   if (is.matrix(x)) {
     sel <- intersect(rownames(x), colnames(train))
     x.sel <- t(x[sel, ])
   }
   else if (inherits(x, "ExpressionSet")){ 
-    sel <- intersect(feaureNames(x), colnames(train))
+    sel <- intersect(featureNames(x), colnames(train))
     x.sel <- t(exprs(x)[sel, ])
   }
   else if (is.data.frame(x)){
@@ -15,6 +26,9 @@ predictEDY <- function(x, ...){
   else {
     stop("'x' must be a matrix, data.frame or an ExpressionSet")
   }
+  
+  if (length(sel) == 0)
+    stop("There are no CpGs in chromosome Y")
   
   train.subset <- train[,sel]
   mod <- glmnet::glmnet(x=as.matrix(train.subset), 

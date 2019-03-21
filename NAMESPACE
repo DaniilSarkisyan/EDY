@@ -3,6 +3,8 @@
 export(getEDY)
 export(get_hgnc)
 export(plot.EDY)
+export(predictEDY)
+import(Biobase)
 import(org.Hs.eg.db)
 importFrom(biomaRt,getBM)
 importFrom(biomaRt,useMart)
