@@ -27,14 +27,14 @@ predictEDY <- function(x, ...){
     stop("'x' must be a matrix, data.frame or an ExpressionSet")
   }
   
-  if (length(sel) == 0)
-    stop("There are no CpGs in chromosome Y")
+  if (length(sel) < 20)
+    stop("There are few or no CpGs in chromosome Y")
   
-  train.subset <- train[,sel]
-  mod <- glmnet::glmnet(x=as.matrix(train.subset), 
-                      y=train[,1],
-                      family="binomial",
-                      alpha=0.5, lambda=0.02)
+  train.subset <- as.matrix(train[,sel])
+  mod <- glmnet::glmnet(x = train.subset,
+                        y = train[,1],
+                        family="binomial",
+                        alpha=0.5, lambda=0.02)
   edy.test <- mod %>% predict(as.matrix(test[,sel]), 
                             type="class") %>% as.factor()
   
