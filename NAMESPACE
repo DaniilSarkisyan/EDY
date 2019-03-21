@@ -3,6 +3,7 @@
 export(getEDY)
 export(get_hgnc)
 export(plot.EDY)
+import(ggplot2)
 import(org.Hs.eg.db)
 importFrom(biomaRt,getBM)
 importFrom(biomaRt,useMart)
