@@ -1,6 +1,6 @@
 #' Extreme Downregulation of chromosome Y (EDY)
 #'
-#' Detection of individuals with EDY
+#' Detection of individuals with EDY from transcriptomic data
 #' @title getEDY
 #' @param x An ExpressionSet from microarray experiment.
 #' @param gender.var The name of the column in the table of phenotype
@@ -14,6 +14,7 @@
 #' @param group.var The name of the column that contains the information about
 #'   if the individual is case or control
 #' @param control.key The symbol that identifies control group (eg.: "control")
+#' @import Biobase
 #' @export getEDY
 #' @return A list containing 4 objects: 
 #' \itemize{ 
