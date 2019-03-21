@@ -7,15 +7,15 @@
 get_hgnc(x, gene.id, gene.col, ...)
 }
 \arguments{
-\item{x}{The table of features of an ExpressionSet (accessed by
-\code{fData()}) or any data.frame or matrix.}
+\item{x}{An ExpressionSet.}
 
 \item{gene.id}{A string indicating the type of gene ID that we want to get
 hgnc symbol from. It must be one of \code{genBank}, \code{entrezgene} or
 \code{ensembl}.}
 
 \item{gene.col}{A string indicating the name of the column that contains the
-\code{gene.id}.}
+\code{gene.id} in the table of features of the ExpressionSet (accessed by
+\code{fData}).}
 }
 \value{
 A \code{data.frame} containing the previous information in \code{x}

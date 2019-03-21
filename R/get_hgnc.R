@@ -4,13 +4,13 @@
 #' end position of the gene and the chromosome name from genBank accession
 #' numbers, entrezgenes (NCBI gene IDs) or Ensembl stable IDs.
 #' @title Get hgnc symbol
-#' @param x The table of features of an ExpressionSet (accessed by
-#'   \code{fData()}) or any data.frame or matrix.
+#' @param x An ExpressionSet.
 #' @param gene.id A string indicating the type of gene ID that we want to get
 #'   hgnc symbol from. It must be one of \code{genBank}, \code{entrezgene} or
 #'   \code{ensembl}.
 #' @param gene.col A string indicating the name of the column that contains the
-#'   \code{gene.id}.
+#'   \code{gene.id} in the table of features of the ExpressionSet (accessed by
+#'   \code{fData}).
 #' 
 #' @importFrom biomaRt useMart getBM
 #' @import org.Hs.eg.db
@@ -22,7 +22,8 @@
 
 get_hgnc <- function(x, gene.id, gene.col, ...){
   
-  query <- x[, gene.col]
+  fData(x)$id.feature <- featureNames(x)
+  query <- fData(x)[, gene.col]
   type <- charmatch(tolower(gene.id), c("entrezgene", "genbank", "ensembl"))
   if (is.na(type) || type==0){
     stop("Invalid gene.id. Try one from 'entrezgene', 'genbank' or 'ensembl'")
@@ -49,12 +50,12 @@ get_hgnc <- function(x, gene.id, gene.col, ...){
     colnames(matrix_entr_id) <- c("entrezgene", gene.col)
     
     #Join to fData
-    x <-  merge(matrix_entr_id, x, by.x = gene.col, by.y = gene.col)
+    fData(x) <-  merge(matrix_entr_id, fData(x), by.x = gene.col, by.y = gene.col)
   } 
   else if (type == 1) {
     entrezgenes <- query
-    position <- which(names(x)==gene.col)
-    names(x)[position] <- "entrezgene"
+    position <- which(names(fData(x))==gene.col)
+    names(fData(x))[position] <- "entrezgene"
     gene.col <- "entrezgene"
   }
   # Get hgnc_symbol from entrezgene
@@ -65,11 +66,11 @@ get_hgnc <- function(x, gene.id, gene.col, ...){
                         values = entrezgenes, mart = ensembl)
 
   #Join to fData
-  x <- merge(hgnc_symbols, x, by.x = "entrezgene", by.y = "entrezgene")
+  fData(x) <- merge(hgnc_symbols, fData(x), by.x = "entrezgene", by.y = "entrezgene")
   #Delete duplicated ids
-  x <- x[!duplicated(x[,gene.col]),]
+  fData(x) <- fData(x)[!duplicated(fData(x)[,gene.col]),]
   
   #output
-  x
+  fData(x)
 }
 
