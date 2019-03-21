@@ -6,9 +6,11 @@
 #' @title Get hgnc symbol
 #' @param x The table of features of an ExpressionSet (accessed by
 #'   \code{fData()}) or any data.frame or matrix.
-#' @param gene.id The type of gene ID that we want to get hgnc symbol from. It
-#'   must be one of \code{genBank}, \code{entrezgene} or \code{ensembl}.
-#' @param gene.col The name of the column that contains the \code{gene.id}.
+#' @param gene.id A string indicating the type of gene ID that we want to get
+#'   hgnc symbol from. It must be one of \code{genBank}, \code{entrezgene} or
+#'   \code{ensembl}.
+#' @param gene.col A string indicating the name of the column that contains the
+#'   \code{gene.id}.
 #' 
 #' @importFrom biomaRt useMart getBM
 #' @import org.Hs.eg.db

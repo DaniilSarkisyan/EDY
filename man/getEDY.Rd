@@ -10,22 +10,24 @@ getEDY(x, gender.var, male.key, gene.key, log = TRUE, group.var,
 \arguments{
 \item{x}{An ExpressionSet from microarray experiment.}
 
-\item{gender.var}{The name of the column in the table of phenotype
-(\code{phenoData}) that contains the gender of the individual.}
+\item{gender.var}{A string indicating the name of the column in the table of
+phenotype (accessed by \code{pData}) that contains the gender of the individual.}
 
-\item{male.key}{The symbol that idendtifies males (eg.: "male", "M", ...).}
+\item{male.key}{A string indicating the symbol that idendtifies males (eg.:
+"male", "M", ...).}
 
-\item{gene.key}{The name of the column that contains the Gene Symbol in the
-table of features (\code{featureData}).}
+\item{gene.key}{A string indicating the name of the column that contains the
+Gene Symbol in the table of features (accessed by \code{fData}).}
 
 \item{log}{Logical. It is set to \code{TRUE} if the gene expression values
 are given in a logarithmic scale in the ExpressionSet and \code{FALSE}
 otherwise. Default is \code{TRUE}.}
 
-\item{group.var}{The name of the column that contains the information about
-if the individual is case or control}
+\item{group.var}{A string indicating the name of the column that contains the
+information about if the individual is case or control.}
 
-\item{control.key}{The symbol that identifies control group (eg.: "control")}
+\item{control.key}{A string indicating the symbol that identifies control
+group (eg.: "control").}
 }
 \value{
 A list containing 4 objects: 
@@ -42,8 +44,15 @@ A list containing 4 objects:
   }
 }
 \description{
-Extreme Downregulation of chromosome Y (EDY)
+Detection of individuals with Extreme Downregulation of chromosome Y (EDY) from transcriptomic data
 }
 \details{
-Detection of individuals with EDY from transcriptomic data
+To assess EDY, we calculate the mean expression of chrY genes divided by the
+mean expression of genes in the rest of the genome (for each individual).
+Now, the following formulae is applied only with individuals in the control
+group, or with all the individuals in case it does not exist such group:
+\deqn{Threshold = median - 1.2 · IQR}
+\emph{*IQR: Interquartile range}
+
+It indicates the trheshold from which down to consider EDY.
 }
