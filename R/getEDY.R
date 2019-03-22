@@ -28,11 +28,10 @@
 #' @export getEDY
 #' @return A list containing 4 objects: 
 #' \itemize{ 
-#'   \item \code{Ry}: a matrix
-#'     with the expression of each gene in chromosome Y divided by the mean
-#'     expression of autosomal genes for each individual. 
-#'   \item \code{EDY}: a factor with two levels, \code{YES} and \code{NO}, 
-#'     that indicates if the individual has EDY or not.
+#'   \item \code{EDY}: a factor with two levels, \code{NO} and \code{YES} , 
+#'     that indicates whether the individual has EDY or not.
+#'   \item \code{EDYcontinuous}: a vector with individual relative expression
+#'     of chromosome Y with regard the autosomal genes.
 #'   \item \code{threshold}: a number indicating the threshold from which down 
 #'     an individual is considered to have EDY. 
 #'   \item \code{eSet}: the ExpressionSet
@@ -84,13 +83,15 @@ getEDY <- function(x, gender.var, male.key, gene.key, log = TRUE, group.var, con
     warning("No control group specified")
     }
   
-  thresh <- median(controls) - 1.2*IQR(controls)
+  thresh <- median(controls, na.rm=TRUE) - 1.2*IQR(controls, na.rm=TRUE)
   EDY <- cut(EDYcontinuous, c(-Inf, thresh, Inf), 
              labels = c("Yes", "No"))
+  EDY <- relevel(EDY, 2)
   
   #output
   names(EDY) <- names(EDYcontinuous)
-  ans <- list(Ry=t(Ry), EDY=EDY, threshold=thresh, eSet=x)
+  ans <- list(EDY=EDY, EDYcontinuous=EDYcontinuous, 
+              threshold=thresh, eSet=x)
   class(ans) <- "EDY"
   ans
 }
