@@ -7,6 +7,8 @@
 #' CpG names in the rowname or a data.frame with individuals/samples
 #' in columns, being the first column the CpG name or an ExpressionSet.ontrol")
 #' @import Biobase
+#' @import caret
+#' @import tidyverse
 #' @export predictEDY
 #' @return A vector with EDY status (No, Yes).
 #' 

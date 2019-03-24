@@ -13,8 +13,8 @@
 #'   line indicates the threshold from which down EDY is considered.
 
 plot.EDY <- function(x, ...){
-  edy <- data.frame(apply(x$Ry, 1, mean), 1:nrow(x$Ry))
-  ggplot(edy, aes(x = edy[,2], y = edy[,1], color = x$EDY)) + 
+  edy <- data.frame(x$EDYcontinuous, 1:length(x$EDYcontinuous))
+  ggplot(edy, aes(x = edy[,2], y = edy[,1], color = relevel(x$EDY, 2))) + 
     geom_point(size = 1.5) +
     labs( y = "Gene expression ChrY / Autosomes", x = "Individuals") +
     theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank(), 

@@ -32,11 +32,10 @@ group (eg.: "control").}
 \value{
 A list containing 4 objects: 
 \itemize{ 
-  \item \code{Ry}: a matrix
-    with the expression of each gene in chromosome Y divided by the mean
-    expression of autosomal genes for each individual. 
-  \item \code{EDY}: a factor with two levels, \code{YES} and \code{NO}, 
-    that indicates if the individual has EDY or not.
+  \item \code{EDY}: a factor with two levels, \code{NO} and \code{YES} , 
+    that indicates whether the individual has EDY or not.
+  \item \code{EDYcontinuous}: a vector with individual relative expression
+    of chromosome Y with regard the autosomal genes.
   \item \code{threshold}: a number indicating the threshold from which down 
     an individual is considered to have EDY. 
   \item \code{eSet}: the ExpressionSet
