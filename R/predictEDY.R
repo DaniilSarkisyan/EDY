@@ -5,7 +5,7 @@
 #' @title predictEDY
 #' @param x A matrix with CpGs in rows, samples in columns and 
 #' CpG names in the rowname or a data.frame with individuals/samples
-#' in columns, being the first column the CpG name or an ExpressionSet.ontrol")
+#' in columns, being the first column the CpG name or an ExpressionSet
 #' @import Biobase
 #' @import caret
 #' @import tidyverse
@@ -29,8 +29,8 @@ predictEDY <- function(x, ...){
     stop("'x' must be a matrix, data.frame or an ExpressionSet")
   }
   
-  if (length(sel) < 20)
-    stop("There are few or no CpGs in chromosome Y")
+  if (length(sel) < 20){
+    stop("There are few or no CpGs in chromosome Y")}
   
   train.subset <- as.matrix(train[,sel])
   mod <- glmnet::glmnet(x = train.subset,
@@ -48,7 +48,7 @@ predictEDY <- function(x, ...){
   accuracy <- round(tt$overall*100, 1)
   cat("\n")
   cat(paste0("   Accuracy : ", accuracy[1], "% \n"))
-  cat(paste0("      CI95% : (", accuracy[3], ", ", accuracy[4], ")"))
+  cat(paste0("      CI95% : (", accuracy[3], ", ", accuracy[4], ")\n"))
   
   edy.pred <- mod %>% predict(x.sel, type="class") %>% as.factor()
   return(edy.pred)
