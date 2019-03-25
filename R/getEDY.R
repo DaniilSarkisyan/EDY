@@ -34,8 +34,10 @@
 #'     of chromosome Y with regard the autosomal genes.
 #'   \item \code{threshold}: a number indicating the threshold from which down 
 #'     an individual is considered to have EDY. 
-#'   \item \code{eSet}: the ExpressionSet
-#'     form the input but with the column hgnc_symbol added to featureData. 
+#'   \item \code{eSet}: an ExpressionSet that contains only males from the
+#'   initial ExpressionSet. It contains a new column named `hgnc_symbol` in
+#'   `fData`, which has the HUGO gene nomenclature comittee symbols.
+#'     
 #'   }
 
 getEDY <- function(x, gender.var, male.key, gene.key, log = TRUE, group.var, control.key, ...){

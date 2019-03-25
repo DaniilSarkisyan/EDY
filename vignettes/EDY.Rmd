@@ -50,10 +50,11 @@ The information about whether the expression data is in logarithmic scale or not
 head(exprs(gse73578))
 ```
 
-The information about gene symbol, gender and males key must be found with `pData`. In this case, gene symbol column is named `Gene Symbol`, gender column is `Sex:ch1` and males key is `M`:
+The information about gene symbol can be accessed by `fData`, and gender and males key must be found with `pData`. If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, gene symbol column is named `Gene Symbol`, gender column is `Sex:ch1` and males key is `M`:
 
 ```{r info2}
 head(fData(gse73578))
+head(pData(gse73578))
 ```
 
 ## Assess EDY
@@ -114,7 +115,7 @@ Similarly, in this example we could have used genBak accession numbers:
 
 ```{r genbank, eval=FALSE}
 # Get HGNC symbols from genBank accession numbers:
-fData(gse73578) <- GB_to_hgnc(x = gse73578, gene.id = "genbank", gene.col = "GB_ACC")
+fData(gse73578) <- get_hgnc(x = gse73578, gene.id = "genbank", gene.col = "GB_ACC")
 ```
 
 Now `getEDY` can be used with `gene.key = "hgnc_symbol"`:
@@ -128,7 +129,7 @@ edy.gse73578_2
 plot(edy.gse73578_2)
 ```
 
-If your dataset does not have gene symbols, genBank accession numbers, entrezgene IDs nor Ensembl stable IDs, you can try to get this information from other columns in `featureData` using *biomaRt*.
+If your dataset does not have gene symbols, genBank accession numbers, entrezgene IDs nor Ensembl stable IDs, you can try to get this information from other columns in `fData` using *biomaRt*.
 
 [massiR]: https://bioconductor.org/packages/release/bioc/html/massiR.html
 [biomaRt]: https://bioconductor.org/packages/release/bioc/html/biomaRt.html

@@ -14,12 +14,12 @@
 
 plot.EDY <- function(x, ...){
   edy <- data.frame(x$EDYcontinuous, 1:length(x$EDYcontinuous))
-  ggplot(edy, aes(x = edy[,2], y = edy[,1], color = relevel(x$EDY, 2))) + 
+  ggplot(edy, aes(x = edy[,2], y = edy[,1], color = x$EDY)) + 
     geom_point(size = 1.5) +
     labs( y = "Gene expression ChrY / Autosomes", x = "Individuals") +
     theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank(), 
           axis.ticks.x = element_blank(), legend.title = element_blank()) +
-    scale_colour_discrete(labels=c("EDY", "normal"), guide = guide_legend(reverse = TRUE)) +
+    scale_colour_discrete(labels=c("normal", "EDY")) +
     scale_y_continuous(breaks = pretty(edy[,1], n = 5)) +
     geom_text(aes(label = ifelse(edy[,1] < x$threshold, as.character(rownames(edy)), '')), hjust = 0, 
               vjust = 1, size = 3) +
