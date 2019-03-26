@@ -51,6 +51,7 @@ predictEDY <- function(x, ...){
   cat(paste0("      CI95% : (", accuracy[3], ", ", accuracy[4], ")\n"))
   
   edy.pred <- mod %>% predict(x.sel, type="class") %>% as.factor()
+  names(edy.pred) <- rownames(x.sel)
   return(edy.pred)
 }
   
