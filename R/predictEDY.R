@@ -14,15 +14,15 @@
 #' 
 predictEDY <- function(x, ...){
   if (is.matrix(x)) {
-    sel <- intersect(rownames(x), colnames(train))
+    sel <- intersect(rownames(x), colnames(EDY::train))
     x.sel <- t(x[sel, ])
   }
   else if (inherits(x, "ExpressionSet")){ 
-    sel <- intersect(featureNames(x), colnames(train))
+    sel <- intersect(featureNames(x), colnames(EDY::train))
     x.sel <- t(exprs(x)[sel, ])
   }
   else if (is.data.frame(x)){
-    sel <- intersect(x[,1], colnames(train))
+    sel <- intersect(x[,1], colnames(EDY::train))
     x.sel <- as.matrix(t(x[x[,1]%in%sel, -1]))
   }
   else {
@@ -32,9 +32,9 @@ predictEDY <- function(x, ...){
   if (length(sel) < 20){
     stop("There are few or no CpGs in chromosome Y")}
   
-  train.subset <- as.matrix(train[,sel])
+  train.subset <- as.matrix(EDY::train[,sel])
   mod <- glmnet::glmnet(x = train.subset,
-                        y = train[,1],
+                        y = EDY::train[,1],
                         family="binomial",
                         alpha=0.5, lambda=0.02)
   edy.test <- mod %>% predict(as.matrix(test[,sel]), 
