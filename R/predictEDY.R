@@ -30,7 +30,8 @@ predictEDY <- function(x, ...){
   }
   
   if (length(sel) < 20){
-    stop("There are few or no CpGs in chromosome Y")}
+    stop("There are few or no CpGs in chromosome Y")
+    }
   
   train.subset <- as.matrix(EDY::train[,sel])
   mod <- glmnet::glmnet(x = train.subset,

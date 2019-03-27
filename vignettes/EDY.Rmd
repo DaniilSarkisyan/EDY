@@ -23,39 +23,48 @@ $$Threshold = median - 1.2IQR$$
 
 # Get the necessary information to assess EDY
 
-EDY can be computed using `getEDY()` function. The main input is an object of class `ExpressionSet`. This function requires also some information including:
+EDY can be computed using `getEDY()` function. The main input is an object of class `ExpressionSet`. This function requires also some information, including:
 
 - Whether the gene expression (accessed with `exprs`) is in logarithmic scale or not. 
 - Which column from the annotation (accessed with `fData`) contains the `Gene symbol`.
 - Which column from the metadata (accessed with `pData`) contains the information about the `gender` and the symbol that codes for `males`.
-- In case of having a case/control study, which column from the metadata (accessed with `pData`) contains the information about which individuals belongs to control group, and the symbol that codes for control. 
+- In case of having a case/control study, which column from the metadata (accessed with `pData`) contains the information about the groups, and the symbol that codes for control. 
 
-Let us illustrate how to compute EDY for a real data set available at GEO. It contains information about gene expression in children with acute lymphoblastic leukemia that has been treated or not with glucocorticoids (GEO accesion number GSE73578). Data can be downloaded into R by
+Let us illustrate how to compute EDY for a real data set available at GEO. It contains information about gene expression in children with acute lymphoblastic leukemia that has been treated or not with glucocorticoids (GEO accesion number GSE73578). Data can be downloaded into R by:
 
 ```{r data, eval = FALSE}
 library(GEOquery)
 gse73578 <- getGEO("GSE73578")[[1]]
 ```
 
-In order to facilitate reproducibility, we have also include this `ExpressionSet` into our package that is loaded by default. We can visualize the content by:
+In order to facilitate reproducibility, we have also include this `ExpressionSet` into our package and it is loaded by default. We can visualize the content by:
 
 ```{r load_eSet}
 gse73578
 ```
 
 
-The information about whether the expression data is in logarithmic scale or not should be specified in the description of the data set, but it can also be checked with `exprs`. In this case, it is logarithhmic: 
+The information about whether the expression data is in logarithmic scale or not should be specified in the description of the data set, but it can also be checked with `exprs`. In this case, it is logarithmic: 
 
 ```{r info}
 head(exprs(gse73578))
 ```
 
-The information about gene symbol can be accessed by `fData`, and gender and males key must be found with `pData`. If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, gene symbol column is named `Gene Symbol`, gender column is `Sex:ch1` and males key is `M`:
+The information about gene symbol can be accessed by `fData`, and gender information must be found using `pData`. If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, gene symbol column is named `Gene Symbol`, gender column is `Sex:ch1` and males key is `M`:
 
 ```{r info2}
 head(fData(gse73578))
 head(pData(gse73578))
 ```
+
+
+Some times, the same entry has several gene symbols. To select only the first one we can use the following code. Otherwise, `getEDY` will not recognise the transcript.
+
+```{r split symbols}
+tmp <- strsplit(fData(gse56044)$UCSC_RefGene_Name, ";")
+fData(gse56044)$Symbol <- unlist(lapply(tmp, function(x) x[1]))
+```
+
 
 ## Assess EDY
 
@@ -101,7 +110,7 @@ The required inputs are:
 - The type of gene ID that we want to use to obtain the HGNC symbols. Must be one of **genebank**, **entrezgene** or **ensembl**.
 - The name of the column that contains the gene IDs. It can be accessed by `fData`.
 
-In the example data set, we can use for instance entregene IDs:
+In the example data set, we can use for instance entrezgene IDs:
 
 ```{r get_hgnc entrezgene}
 head(fData(gse73578))  
@@ -111,7 +120,7 @@ fData(gse73578) <- get_hgnc(x = gse73578, gene.id = "entrezgene", gene.col = "EN
 head(fData(gse73578))
 ```
 
-Similarly, in this example we could have used genBak accession numbers:
+Similarly, in this example we could have used genBank accession numbers:
 
 ```{r genbank, eval=FALSE}
 # Get HGNC symbols from genBank accession numbers:
@@ -129,7 +138,26 @@ edy.gse73578_2
 plot(edy.gse73578_2)
 ```
 
+As we can see, the results are not exactly the same when we get the HGNC symbols with `get_hgnc` function than when we already have them in the original data set. It is due to the loss of some IDs during the translation, since not all the IDs find their equivalence in the consulted databases.
+
+
 If your dataset does not have gene symbols, genBank accession numbers, entrezgene IDs nor Ensembl stable IDs, you can try to get this information from other columns in `fData` using *biomaRt*.
+
+# EDY prediction from methylation data.
+
+Another utility of this package it to predict extreme downregulation of chromosome Y using methylation data. For this purpose, we use the function `predictEDY`. The only input for this function is *one* of: 
+
+- A matrix with CpGs in rows, samples in columns and CpG names in the rowname.
+- A data.frame with individuals/samples in columns, being the first column the CpG names.
+- An ExpressionSet.
+
+
+The prediction is based on an Elastic Net regression model, trained with data from The Cancer Genome Atlas (TCGA).
+
+```{r predictEDY}
+
+```
 
 [massiR]: https://bioconductor.org/packages/release/bioc/html/massiR.html
 [biomaRt]: https://bioconductor.org/packages/release/bioc/html/biomaRt.html
+[The Cancer Genome Atlas (TCGA)]: https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga
