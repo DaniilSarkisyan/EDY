@@ -50,20 +50,27 @@ The information about whether the expression data is in logarithmic scale or not
 head(exprs(gse73578))
 ```
 
-The information about gene symbol can be accessed by `fData`, and gender information must be found using `pData`. If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, gene symbol column is named `Gene Symbol`, gender column is `Sex:ch1` and males key is `M`:
+The information about gene symbol can be accessed by `fData`. If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, gene symbol column is named `Gene Symbol`:
 
 ```{r info2}
 head(fData(gse73578))
+```
+
+
+Some times, the same entry has several gene symbols. In this case, the gene symbols are separted by " /// ". To select only the first one we can use the following code, otherwise, `getEDY` will not recognise the transcript.
+
+```{r split symbols}
+tmp <- strsplit(fData(gse73578)[, "Gene Symbol"], " /// ")
+fData(gse73578)$Symbol <- unlist(lapply(tmp, function(x) x[1]))
+head(fData(gse73578)[,c("Gene Symbol","Symbol")])
+```
+
+The information about the sex of individuals must be found using `pData`. In this case, gender column is `Sex:ch1` and males key is `M`. If you cannot find this information here, please see [Missing information](#missing-information) section below
+
+```{r info3}
 head(pData(gse73578))
 ```
 
-
-Some times, the same entry has several gene symbols. To select only the first one we can use the following code. Otherwise, `getEDY` will not recognise the transcript.
-
-```{r split symbols}
-tmp <- strsplit(fData(gse56044)$UCSC_RefGene_Name, ";")
-fData(gse56044)$Symbol <- unlist(lapply(tmp, function(x) x[1]))
-```
 
 
 ## Assess EDY
