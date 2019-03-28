@@ -94,6 +94,7 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
   EDY <- relevel(EDY, 2)
   
   #output
+  pData(x)$EDY <- EDY
   names(EDY) <- names(EDYcontinuous)
   ans <- list(EDY=EDY, EDYcontinuous=EDYcontinuous, 
               threshold=thresh, eSet=x)
