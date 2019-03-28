@@ -4,8 +4,8 @@
 \alias{getEDY}
 \title{getEDY}
 \usage{
-getEDY(x, gender.var, male.key, gene.key, log = TRUE, group.var,
-  control.key, ...)
+getEDY(x, gender.var, male.key, gene.key, coef = 1.2, log = TRUE,
+  group.var, control.key, ...)
 }
 \arguments{
 \item{x}{An ExpressionSet from microarray experiment.}
@@ -18,6 +18,9 @@ phenotype (accessed by \code{pData}) that contains the gender of the individual.
 
 \item{gene.key}{A string indicating the name of the column that contains the
 Gene Symbol in the table of features (accessed by \code{fData}).}
+
+\item{coef}{value to consider an outlier when calling LOY. Default correspond to
+1.2 which keeps 5% of data in the normal case.}
 
 \item{log}{Logical. It is set to \code{TRUE} if the gene expression values
 are given in a logarithmic scale in the ExpressionSet and \code{FALSE}
