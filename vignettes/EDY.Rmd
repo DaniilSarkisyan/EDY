@@ -50,27 +50,27 @@ The information about whether the expression data is in logarithmic scale or not
 head(exprs(gse73578))
 ```
 
-The information about gene symbol can be accessed by `fData`. If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, gene symbol column is named `Gene Symbol`:
+The information about gene symbol can be accessed by `fData`. If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, the gene symbol column is named `Gene Symbol`:
 
 ```{r info2}
 head(fData(gse73578))
 ```
 
 
-Some times, the same entry has several gene symbols. In this case, the gene symbols are separted by " /// ". To select only the first one we can use the following code, otherwise, `getEDY` will not recognise the transcript.
+Some times, the same entry has several gene symbols. In this case, the gene symbols are separted by ` /// `. To select only the first symbol we can use the following code, otherwise, `getEDY` will not recognise the transcript.
 
 ```{r split symbols}
 tmp <- strsplit(fData(gse73578)[, "Gene Symbol"], " /// ")
 fData(gse73578)$Symbol <- unlist(lapply(tmp, function(x) x[1]))
+
 head(fData(gse73578)[,c("Gene Symbol","Symbol")])
 ```
 
-The information about the sex of individuals must be found using `pData`. In this case, gender column is `Sex:ch1` and males key is `M`. If you cannot find this information here, please see [Missing information](#missing-information) section below
+The information about the sex of individuals must be found using `pData`. In this case, gender column is `Sex:ch1` and males key is `M`. If you cannot find this information here, please see [Missing information](#missing-information) section below.
 
 ```{r info3}
 head(pData(gse73578))
 ```
-
 
 
 ## Assess EDY
@@ -127,14 +127,14 @@ fData(gse73578) <- get_hgnc(x = gse73578, gene.id = "entrezgene", gene.col = "EN
 head(fData(gse73578))
 ```
 
-Similarly, in this example we could have used genBank accession numbers:
+Similarly, in this example we could have used genBank accession numbers as:
 
 ```{r genbank, eval=FALSE}
 # Get HGNC symbols from genBank accession numbers:
 fData(gse73578) <- get_hgnc(x = gse73578, gene.id = "genbank", gene.col = "GB_ACC")
 ```
 
-Now `getEDY` can be used with `gene.key = "hgnc_symbol"`:
+Now `getEDY` can be applied with `gene.key = "hgnc_symbol"`:
 
 ```{r getEDY hgnc symbol}
 edy.gse73578_2 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
@@ -156,14 +156,16 @@ Another utility of this package it to predict extreme downregulation of chromoso
 
 - A matrix with CpGs in rows, samples in columns and CpG names in the rowname.
 - A data.frame with individuals/samples in columns, being the first column the CpG names.
-- An ExpressionSet.
+- An ExpressionSet with methylation data.
 
 
 The prediction is based on an Elastic Net regression model, trained with data from The Cancer Genome Atlas (TCGA).
 
 ```{r predictEDY}
-
+edy.prediction <- predictEDY()
 ```
+
+
 
 [massiR]: https://bioconductor.org/packages/release/bioc/html/massiR.html
 [biomaRt]: https://bioconductor.org/packages/release/bioc/html/biomaRt.html

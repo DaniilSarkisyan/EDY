@@ -38,13 +38,13 @@ predictEDY <- function(x, ...){
                         y = EDY::train[,1],
                         family="binomial",
                         alpha=0.5, lambda=0.02)
-  edy.test <- mod %>% predict(as.matrix(test[,sel]), 
+  edy.test <- mod %>% predict(as.matrix(EDY::test[,sel]), 
                             type="class") %>% as.factor()
   
   cat("\n")
   cat("EDY predictive capacity of your model (TCGA test dataset) \n")
   cat("--------------------------------------------------------- \n \n")
-  tt <- confusionMatrix(edy.test, test$EDY)
+  tt <- confusionMatrix(edy.test, EDY::test$EDY)
   print(tt$table)
   accuracy <- round(tt$overall*100, 1)
   cat("\n")
