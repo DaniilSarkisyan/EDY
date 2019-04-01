@@ -158,14 +158,20 @@ Another utility of this package it to predict extreme downregulation of chromoso
 - A data.frame with individuals/samples in columns, being the first column the CpG names.
 - An ExpressionSet with methylation data.
 
+The input must contain only male individuals, since it does not make sense to do a prediction of EDY in females.
 
-The prediction is based on an Elastic Net regression model, trained with data from The Cancer Genome Atlas (TCGA).
+The prediction is based on an Elastic Net regression model, trained with data from The Cancer Genome Atlas (TCGA). In the following example, we use a matrix containing methylation information of chromosome Y of men who suffer from  localized, non-indolent prostate cancer (subset from `GSE84043`). The matrix is available in this package and loaded by default to facilitate reproducibility:
 
 ```{r predictEDY}
-edy.prediction <- predictEDY()
+head(chrY.meth.matrix)[,1:6]
+edy.prediction <- predictEDY(chrY.meth.matrix)
 ```
+The accuracy and the confidence interval 95% of the model is calculated by using the same CpGs of chromosome Y in your data to predict EDY in the TCGA dataset and then comparing with the real EDY calculated with `getEDY`. Next, the model is used to predict EDY in the problem matrix. The results are the following:
 
-
+```{r prediction results}
+edy.prediction
+table(edy.prediction)
+```
 
 [massiR]: https://bioconductor.org/packages/release/bioc/html/massiR.html
 [biomaRt]: https://bioconductor.org/packages/release/bioc/html/biomaRt.html
