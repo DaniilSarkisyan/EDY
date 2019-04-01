@@ -40,6 +40,7 @@ gse73578 <- getGEO("GSE73578")[[1]]
 In order to facilitate reproducibility, we have also include this `ExpressionSet` into our package and it is loaded by default. We can visualize the content by:
 
 ```{r load_eSet}
+library(EDY)
 gse73578
 ```
 
@@ -78,8 +79,6 @@ head(pData(gse73578))
 Now, we can apply `getEDY`:
 
 ```{r getEDY}
-library(EDY)
-
 edy.gse73578 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
                        male.key = 'M', 
                        gene.key = 'Gene Symbol', log = TRUE)
@@ -169,7 +168,7 @@ edy.prediction <- predictEDY(chrY.meth.matrix)
 The accuracy and the confidence interval 95% of the model is calculated by using the same CpGs of chromosome Y in your data to predict EDY in the TCGA dataset and then comparing with the real EDY calculated with `getEDY`. Next, the model is used to predict EDY in the problem matrix. The results are the following:
 
 ```{r prediction results}
-edy.prediction
+edy.prediction[1:20]
 table(edy.prediction)
 ```
 
