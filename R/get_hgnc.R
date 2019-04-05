@@ -71,6 +71,6 @@ get_hgnc <- function(x, gene.id, gene.col, ...){
   fData(x) <- fData(x)[!duplicated(fData(x)[,gene.col]),]
   
   #output
-  fData(x)
+  x
 }
 

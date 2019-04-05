@@ -41,6 +41,9 @@ In order to facilitate reproducibility, we have also include this `ExpressionSet
 
 ```{r load_eSet}
 library(EDY)
+library(caret)
+library(tidyverse)
+library(Biobase)
 gse73578
 ```
 
@@ -58,7 +61,7 @@ head(fData(gse73578))
 ```
 
 
-Some times, the same entry has several gene symbols. In this case, the gene symbols are separted by ` /// `. To select only the first symbol we can use the following code, otherwise, `getEDY` will not recognise the transcript.
+Some times, the same entry has several gene symbols. In this example, the gene symbols are separted by ` /// `. To select only the first symbol we can use the following code, otherwise, `getEDY` will not recognise the transcript:
 
 ```{r split symbols}
 tmp <- strsplit(fData(gse73578)[, "Gene Symbol"], " /// ")
@@ -104,7 +107,7 @@ EDYindividuals
 
 ### Gender of individuals
 
-In case your dataset does not contain information about the sex of the individuals, you can assess it using *massiR*.
+In case your dataset does not contain information about the sex of the individuals, you can assess it using [massiR].
 
 ### Gene Symbol
 
@@ -147,7 +150,7 @@ plot(edy.gse73578_2)
 As we can see, the results are not exactly the same when we get the HGNC symbols with `get_hgnc` function than when we already have them in the original data set. It is due to the loss of some IDs during the translation, since not all the IDs find their equivalence in the consulted databases.
 
 
-If your dataset does not have gene symbols, genBank accession numbers, entrezgene IDs nor Ensembl stable IDs, you can try to get this information from other columns in `fData` using *biomaRt*.
+If your dataset does not have gene symbols, genBank accession numbers, entrezgene IDs nor Ensembl stable IDs, you can try to get this information from other columns in `fData` using [biomaRt].
 
 # EDY prediction from methylation data.
 
@@ -157,9 +160,9 @@ Another utility of this package it to predict extreme downregulation of chromoso
 - A data.frame with individuals/samples in columns, being the first column the CpG names.
 - An ExpressionSet with methylation data.
 
-The input must contain only male individuals, since it does not make sense to do a prediction of EDY in females.
+The input must contain only male individuals, since it does not make sense to do a prediction of EDY in females. If it contains NAs, some predictions may be NA too. 
 
-The prediction is based on an Elastic Net regression model, trained with data from The Cancer Genome Atlas (TCGA). In the following example, we use a matrix containing methylation information of chromosome Y of men who suffer from  localized, non-indolent prostate cancer (subset from `GSE84043`). The matrix is available in this package and loaded by default to facilitate reproducibility:
+The prediction is based on an Elastic Net regression model, trained with data from [The Cancer Genome Atlas (TCGA)]. In the following example, we use a matrix containing methylation information of chromosome Y of men who suffer from  localized, non-indolent prostate cancer (subset from `GSE84043`). The matrix is available in this package and loaded by default to facilitate reproducibility:
 
 ```{r predictEDY}
 head(chrY.meth.matrix)[,1:6]

@@ -67,8 +67,10 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
   rownames(gene.expr) <- annot.expr[, 'hgnc_symbol']
   #Select those genes that belong to chrY
   exprY <- gene.expr[annot.expr[, 'hgnc_symbol']%in%chrY$hgnc_symbol,]
+  exprY <- exprY[complete.cases(exprY),]
   #Select those genes that belong to the rest of the genome
   exprRef <- gene.expr[annot.expr[, 'hgnc_symbol']%in%chrRef$hgnc_symbol,]
+  exprRef <- exprRef[complete.cases(exprRef),]
   
   #Apply EDY formulae: 
   if (log) {
