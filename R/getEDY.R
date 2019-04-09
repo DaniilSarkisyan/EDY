@@ -49,6 +49,7 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
   if (!missing(gender.var)) {
     ii <- which(varLabels(x)==gender.var)
     x <- x[,pData(x)[,ii]==male.key]
+    x <- x[,!is.na(pData(x)[,ii])]
   } else {warning("male.key not specified. Performing analysis with the whole dataset")}
   
   #Add column with the hgnc symbol information to fData
