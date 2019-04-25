@@ -179,7 +179,8 @@ edy.prediction
 table(edy.prediction)
 ```
 
-As we can observe, the prediction is pretty accurate. In the data set information we can check that the individual predicted as EDY is the same individual classified as EDY with `getEDY`.
+As we can observe, the prediction is more or less accurate. In the data set information we can check that the individual classified as EDY when using `getEDY`is also predicted to have EDY, but we have one individual predicted as EDY that was not classified as so.
+
 
 [massiR]: https://bioconductor.org/packages/release/bioc/html/massiR.html
 [biomaRt]: https://bioconductor.org/packages/release/bioc/html/biomaRt.html
