@@ -85,7 +85,7 @@ Now, we can apply `getEDY` (note that this is not a case/control study, so we do
 ```{r getEDY}
 edy.GSE50774 <- getEDY(x = GSE50774.expr, gender.var = 'gender:ch1',
                        male.key = 'M', 
-                       gene.key = 'Gene Symbol', log = TRUE, coef = 1)
+                       gene.key = 'Symbol', log = TRUE)
 
 edy.GSE50774
 ```
@@ -164,7 +164,7 @@ Another utility of this package it to predict extreme downregulation of chromoso
 
 The input must contain only male individuals, since it does not make sense to do a prediction of EDY in females. If it contains NAs, some predictions may be NA too. 
 
-The prediction is based on an Elastic Net regression model, trained with data from [The Cancer Genome Atlas (TCGA)]. In the following example, we use a matrix containing the methylation information of chromosome Y of the previous data set (`GSE50774`). It is already filtered and contains only the same individuals for which we calculated EDY prevously. It is available in this package and loaded by default to facilitate reproducibility, but you can download the whole ExpressionSet with methylation data of all the genome:
+The prediction is based on an Elastic Net regression model, trained with data from [The Cancer Genome Atlas (TCGA)]. In the following example, we use a matrix containing the methylation information of chromosome Y of the previous data set (`GSE50774`). It is already filtered and contains only the same individuals for which we calculated EDY previously. It is available in this package and loaded by default to facilitate reproducibility, but you can download the whole ExpressionSet with all the methylation data:
 
 ```{r predictEDY}
 # You can download the whole methylation data using:
