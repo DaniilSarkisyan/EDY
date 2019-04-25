@@ -84,7 +84,7 @@ Now, we can apply `getEDY`:
 ```{r getEDY}
 edy.gse73578 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
                        male.key = 'M', 
-                       gene.key = 'Gene Symbol', log = TRUE)
+                       gene.key = 'Symbol', log = TRUE)
 
 edy.gse73578
 ```
@@ -125,7 +125,7 @@ In the example data set, we can use for instance entrezgene IDs:
 head(fData(gse73578))  
 
 # Get HGNC symbols from entrezgene IDs:
-fData(gse73578) <- get_hgnc(x = gse73578, gene.id = "entrezgene", gene.col = "ENTREZ_GENE_ID")
+gse73578 <- get_hgnc(x = gse73578, gene.id = "entrezgene", gene.col = "ENTREZ_GENE_ID")
 head(fData(gse73578))
 ```
 
@@ -133,7 +133,7 @@ Similarly, in this example we could have used genBank accession numbers as:
 
 ```{r genbank, eval=FALSE}
 # Get HGNC symbols from genBank accession numbers:
-fData(gse73578) <- get_hgnc(x = gse73578, gene.id = "genbank", gene.col = "GB_ACC")
+gse73578 <- get_hgnc(x = gse73578, gene.id = "genbank", gene.col = "GB_ACC")
 ```
 
 Now `getEDY` can be applied with `gene.key = "hgnc_symbol"`:
@@ -168,6 +168,7 @@ The prediction is based on an Elastic Net regression model, trained with data fr
 head(chrY.meth.matrix)[,1:6]
 edy.prediction <- predictEDY(chrY.meth.matrix)
 ```
+
 The accuracy and the confidence interval 95% of the model is calculated by using the same CpGs of chromosome Y in your data to predict EDY in the TCGA dataset and then comparing with the real EDY calculated with `getEDY`. Next, the model is used to predict EDY in the problem matrix. The results are the following:
 
 ```{r prediction results}
