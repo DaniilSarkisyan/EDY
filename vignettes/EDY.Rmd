@@ -1,34 +1,72 @@
 ---
-title: "EDY usage"
-author: "Gema Rojas"
+title: "Extreme donwregulation of chromosome Y"
+author: 
+- name: Gema Rojas
+  affiliation: 
+  - &uab Autonomous University of Barcelona (UAB)
+  - &isglobal ISGlobal, Centre for Research in Environmental Epidemiology (CREAL)
+  - &brge Bioinformatics Research Group in Epidemiolgy (BRGE)
+- name: Alejandro Cáceres
+  affiliation: 
+  - *isglobal
+  - *brge
+- name: Juan R. Gonzalez
+  affiliation: 
+  - *isglobal
+  - *brge
+  - *uab
+  email: juanr.gonzalez@isglobal.org
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+package: "`r pkg_ver('EDY')`"
+output: 
+  BiocStyle::html_document:
+    number_sections: true
+    toc: yes
+    fig_caption: yes
+    toc_float: true
 vignette: >
-  %\VignetteIndexEntry{EDY usage}
+  %\VignetteIndexEntry{Extreme donwregulation of chromosome Y}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+knitr::opts_chunk$set(collapse = TRUE, comment = "", 
+                      cache=TRUE, message = FALSE
 )
 ```
 
 # Purpose of this package
 
-The aim of this package is to help the user to detect individuals who present extreme downregulation of chromosome Y (EDY) from microarray experiments. The EDY is assessed by computing the relative expression of genes in chromosome Y with regard the autosomal genes for each individual, and then, the next formulae is applied to stablish a trheshold from which down to consider that the individual has EDY:
-$$Threshold = median - 1.2IQR$$
+The aim of this package is to help the user to detect individuals who present extreme downregulation of chromosome Y (EDY) from microarray or RNA-seq experiments. For each individual, we measured the relative expression of the entire chromosome Y with respect to the autosomes. For $n$ probes (exons) in
+chromosome Y, with $x_i$ intensity (read counts) for the $i$-th probe, we compute 
+$y=1/n \sum_{i=1}^N \log_2(x_i)$ as a measure of the average expression of chromosome Y. Likewise, for $m$ probes in the autosomes, we computed the mean expression of autosomes $a = 1/m \sum_{i=1}^M \log_2(x_i)$ [NOTE: for RNAseq data $\log_2(x_i + 1)$ is computed to avoid problems with zero counts]. The
+relative amount of an individual's Y expression with respect to the individual's autosomes was then
+$Ry=y-a$, and, in a population sample, the individual $j$ was considered with EDY if
+
+$$Ry_j < median(Ry) - 1.2 IQR(Ry)$$, 
+
+where IQR is the inter-quartile range across the sample.
+
 
 # Get the necessary information to assess EDY
 
-EDY can be computed using `getEDY()` function. The main input is an object of class `ExpressionSet`. This function requires also some information, including:
+First, let us load the required packages
+
+```{r load_packages}
+library(EDY)
+library(caret)
+library(tidyverse)
+library(Biobase)
+```
+
+EDY can be computed using `getEDY()` function from `EDY` package. The main input is an object of class `ExpressionSet`. This function requires also some information, including:
 
 - Whether the gene expression (accessed with `exprs`) is in logarithmic scale or not. 
-- Which column from the annotation (accessed with `fData`) contains the `Gene symbol`.
-- Which column from the metadata (accessed with `pData`) contains the information about the `gender` and the symbol that codes for `males`.
-- In case of having a case/control study, which column from the metadata (accessed with `pData`) contains the information about the groups, and the symbol that codes for control. 
+- Which column from the annotation (accessed with `fData`) contains the `Gene symbol`. This is required to get the relative expression of chromosome Y.
+- Which column from the metadata (accessed with `pData`) contains the information about the `gender` and the symbol that codes for `males`. This is required since EDY is computed only in male samples.
+- In case of having a case/control study, which column from the metadata (accessed with `pData`) contains the information about the groups, and the symbol that codes for control. When this information is available, the $Ry$ value is estimated only in controls. 
 
 Let us illustrate how to compute EDY for a real data set available at GEO. It contains information about gene expression in children with acute lymphoblastic leukemia that has been treated or not with glucocorticoids (GEO accesion number GSE73578). Data can be downloaded into R by:
 
@@ -40,70 +78,80 @@ gse73578 <- getGEO("GSE73578")[[1]]
 In order to facilitate reproducibility, we have also include this `ExpressionSet` into our package and it is loaded by default. We can visualize the content by:
 
 ```{r load_eSet}
-library(EDY)
-library(caret)
-library(tidyverse)
-library(Biobase)
 gse73578
 ```
-
 
 The information about whether the expression data is in logarithmic scale or not should be specified in the description of the data set, but it can also be checked with `exprs`. In this case, it is logarithmic: 
 
 ```{r info}
-head(exprs(gse73578))
+exprs(gse73578)[1:5, 1:5]
 ```
 
 The information about gene symbol can be accessed by `fData`. If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, the gene symbol column is named `Gene Symbol`:
 
 ```{r info2}
-head(fData(gse73578))
+fData(gse73578)[1:5,1:4]
+names(fData(gse73578))
 ```
 
 
-Some times, the same entry has several gene symbols. In this example, the gene symbols are separted by ` /// `. To select only the first symbol we can use the following code, otherwise, `getEDY` will not recognise the transcript:
+In some occasions, the same entry has several gene symbols. In this example, the gene symbols are separted by ` /// `. To select only the first symbol we can use the following code, otherwise, `getEDY` will not recognise the transcript:
 
-```{r split symbols}
+```{r split_symbols}
 tmp <- strsplit(fData(gse73578)[, "Gene Symbol"], " /// ")
 fData(gse73578)$Symbol <- unlist(lapply(tmp, function(x) x[1]))
 
 head(fData(gse73578)[,c("Gene Symbol","Symbol")])
 ```
 
-The information about the sex of individuals must be found using `pData`. In this case, gender column is `Sex:ch1` and males key is `M`. If you cannot find this information here, please see [Missing information](#missing-information) section below.
+The information about the sex of individuals must be found using `pData`. In this case, gender column is called `Sex:ch1` and males key is `M`. If, for some reason, your data do not contain this information, this can be estimated from expression data (see [Missing information](#missing-information) section below).
 
 ```{r info3}
-head(pData(gse73578))
+names(pData(gse73578))
+```
+
+This is the total number of male and female samples
+
+```{r tableEDY0}
+table(gse73578$`Sex:ch1`)
 ```
 
 
 ## Assess EDY
 
-Now, we can apply `getEDY`:
+Once this information is obtained, the EDY status of **male** samples can be obtained by:
 
 ```{r getEDY}
 edy.gse73578 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
                        male.key = 'M', 
-                       gene.key = 'Symbol', log = TRUE)
+                       gene.key = 'Symbol')
 
 edy.gse73578
 ```
 
-A scatter plot can be easily generated by `plot` to visualize the relative expression of chromosome Y with regard to autosomal genes for each individual, as well as the threshold (dashed line) and the individuals considered as EDY:
+Notice that the argument `log=TRUE` has be omitted in the function since this is the default value. This function returns an `ExpressionSet` object having EDY status in a new variable called `EDY` 
+
+```{r tableEDY}
+table(edy.gse73578$EDY)
+```
+
+A scatter plot can be easily generated by using the generic function `plot`. It allows to visualize the relative expression of chromosome Y with regard to autosomal genes for each individual, as well as the threshold (dashed line) and the individuals considered as EDY:
 
 ```{r plot}
 plot(edy.gse73578)
 ```
 
-To obtain the identifier of individuals classified as EDY, the following code can be used:
+The ids of individuals classified as EDY can be obtained by 
 
-```{r EDY selection}
+```{r EDY_selection}
 EDYindividuals <- names(edy.gse73578$EDY[edy.gse73578$EDY=="Yes"])
 EDYindividuals
 ```
 
 
 # Missing information
+
+In this section we are describing how to obtain some of the required information to estimate EDY. It includes examples about how to get gender of individuals or gene symbol that is required to select probes from chromosome Y.
 
 ### Gender of individuals
 
@@ -121,15 +169,15 @@ The required inputs are:
 
 In the example data set, we can use for instance entrezgene IDs:
 
-```{r get_hgnc entrezgene}
-head(fData(gse73578))  
+```{r get_hgnc_entrezgene}
+names(fData(gse73578))  
 
 # Get HGNC symbols from entrezgene IDs:
 gse73578 <- get_hgnc(x = gse73578, gene.id = "entrezgene", gene.col = "ENTREZ_GENE_ID")
-head(fData(gse73578))
+fData(gse73578)[1:5, 1:5]
 ```
 
-Similarly, in this example we could have used genBank accession numbers as:
+Observe that column `hgnc_symbol` has been added to the annotation. Similarly, in this example we could have used genBank accession numbers by simply:
 
 ```{r genbank, eval=FALSE}
 # Get HGNC symbols from genBank accession numbers:
@@ -138,7 +186,7 @@ gse73578 <- get_hgnc(x = gse73578, gene.id = "genbank", gene.col = "GB_ACC")
 
 Now `getEDY` can be applied with `gene.key = "hgnc_symbol"`:
 
-```{r getEDY hgnc symbol}
+```{r getEDY_hgnc_symbol}
 edy.gse73578_2 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
                        male.key = 'M', 
                        gene.key = 'hgnc_symbol', log = TRUE)
@@ -147,8 +195,17 @@ edy.gse73578_2
 plot(edy.gse73578_2)
 ```
 
-As we can see, the results are not exactly the same when we get the HGNC symbols with `get_hgnc` function than when we already have them in the original data set. It is due to the loss of some IDs during the translation, since not all the IDs find their equivalence in the consulted databases.
+```{r tableEDY2}
+table(edy.gse73578_2$EDY)
+```
 
+
+```{r EDY selection2}
+EDYindividuals2 <- names(edy.gse73578_2$EDY[edy.gse73578_2$EDY=="Yes"])
+EDYindividuals2
+```
+
+As we can see, the results are the same as when using gene symbols from the original data set. The only observe change is with regard to the magnitude of the continuous value of EDY. It is due to the loss of some gene IDs during the translation, since not all the IDs find their equivalence in the consulted databases.
 
 If your dataset does not have gene symbols, genBank accession numbers, entrezgene IDs nor Ensembl stable IDs, you can try to get this information from other columns in `fData` using [biomaRt].
 

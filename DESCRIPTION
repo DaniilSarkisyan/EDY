@@ -1,9 +1,10 @@
 Package: EDY
 Type: Package
 Title: Analysis of extreme downregulation of chromosome Y (EDY)
-Version: 0.1.0
-Author: Gema Rojas Granado
-Maintainer: Gema Rojas Granado <gemarojasgranado@gmail.com>
+Version: 0.1.1
+Authors@R: c(person("Gema", "Rojas", , "gemarojasgranado@gmail.com", role = "aut"),
+  person("Alejandro", "Cáceres", , "alejandro.caceres@isglobal.org", role = "aut"),
+  person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = c("aut", "cre")))
 Description: Detection of individuals with EDY and some helpful 
     functions to prepare the data for the detection.
 License: MIT license
