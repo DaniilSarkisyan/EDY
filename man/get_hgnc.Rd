@@ -4,17 +4,19 @@
 \alias{get_hgnc}
 \title{Get hgnc symbol}
 \usage{
-get_hgnc(x, gene.id, gene.col, ...)
+get_hgnc(x, key.type, key.col, ...)
 }
 \arguments{
 \item{x}{An ExpressionSet.}
 
-\item{gene.id}{A string indicating the type of gene ID that we want to get
-hgnc symbol from. It must be one of \code{genBank}, \code{entrezgene} or
-\code{ensembl}.}
+\item{key.type}{A string indicating the type of gene ID that we want to get
+hgnc symbol from. It must be one of \code{'ENTREZID', 'EXONID',
+'GENEBIOTYPE', 'GENEID', 'GENENAME', 'PROTDOMID', 'PROTEINDOMAINID',
+'PROTEINDOMAINSOURCE', 'PROTEINID', 'SEQNAME', 'SEQSTRAND', 'SYMBOL',
+'TXBIOTYPE', 'TXID', 'TXNAME', 'UNIPROTID' and 'GENBANK'}.}
 
-\item{gene.col}{A string indicating the name of the column that contains the
-\code{gene.id} in the table of features of the ExpressionSet (accessed by
+\item{key.col}{A string indicating the name of the column that contains the
+\code{key.type} in the table of features of the ExpressionSet (accessed by
 \code{fData}).}
 }
 \value{
