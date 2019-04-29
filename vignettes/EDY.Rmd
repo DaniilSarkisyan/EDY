@@ -159,12 +159,13 @@ In case your dataset does not contain information about the sex of the individua
 
 ### Gene Symbol
 
-If your dataset does not contain information about the gene symbol, the function `get_hgnc` can be used to get the hgnc (HUGO gene nomenclature committee) symbols from genBank accession numbers, entrezgenes (NCBI gene IDs) or Ensembl stable IDs. 
+If your dataset does not contain information about the gene symbol, the function `get_hgnc` can be used to get the hgnc (HUGO gene nomenclature committee) symbols from genBank accession numbers, entrezgenes (NCBI gene IDs) or other types of identifiers. This function uses the package [org.Hs.eg.db] when we want to obtain the symbols from genBank accession numbers. For the rest of the cases, it uses the package [EnsDb.Hsapiens.v86]. [Here] you can find more information about how to use the package and explore it contents.
+
 
 The required inputs are:
 
 - An ExpressionSet.
-- The type of gene ID that we want to use to obtain the HGNC symbols. Must be one of **genebank**, **entrezgene** or **ensembl**.
+- The type of gene ID that we want to use to obtain the HGNC symbols. Must be one of It must be one of `ENTREZID`, `EXONID`, `GENEBIOTYPE`, `GENEID`, `GENENAME`, `PROTDOMID`, `PROTEINDOMAINID`, `PROTEINDOMAINSOURCE`, `PROTEINID`, `SEQNAME`, `SEQSTRAND`, `TXBIOTYPE`, `TXID`, `TXNAME`, `UNIPROTID` or `GENBANK`.
 - The name of the column that contains the gene IDs. It can be accessed by `fData`.
 
 In the example data set, we can use for instance entrezgene IDs. If  the same entry has several entrezgene IDs, we need to select just one like we did before:
@@ -212,9 +213,9 @@ EDYindividuals2 <- names(edy.gse73578_2$EDY[edy.gse73578_2$EDY=="Yes"])
 EDYindividuals2
 ```
 
-As we can see, the results are the same as when using gene symbols from the original data set. The only observe change is with regard to the magnitude of the continuous value of EDY. It is due to the loss of some gene IDs during the translation, since not all the IDs find their equivalence in the consulted databases.
+As we can see, the results are not the same as when using gene symbols from the original data set. It is due to the loss of some gene IDs during the translation, since not all the IDs find their equivalence in the consulted databases.
 
-If your dataset does not have gene symbols, genBank accession numbers, entrezgene IDs nor Ensembl stable IDs, you can try to get this information from other columns in `fData` using [biomaRt].
+If your dataset does not have gene symbols, genBank accession numbers, entrezgene IDs nor any of the accepted identifiers, you can try to get this information from other columns in `fData` using [biomaRt].
 
 # EDY prediction from methylation data.
 
@@ -243,3 +244,6 @@ table(edy.prediction)
 [massiR]: https://bioconductor.org/packages/release/bioc/html/massiR.html
 [biomaRt]: https://bioconductor.org/packages/release/bioc/html/biomaRt.html
 [The Cancer Genome Atlas (TCGA)]: https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga
+[EnsDb.Hsapiens.v86]: http://bioconductor.org/packages/release/data/annotation/manuals/EnsDb.Hsapiens.v86/man/EnsDb.Hsapiens.v86.pdf
+[org.Hs.eg.db]: https://bioconductor.org/packages/release/data/annotation/manuals/org.Hs.eg.db/man/org.Hs.eg.db.pdf
+[Here]: http://bioconductor.org/packages/release/bioc/vignettes/ensembldb/inst/doc/ensembldb.html#8_using_ensdb_objects_in_the_annotationdbi_framework
