@@ -167,13 +167,20 @@ The required inputs are:
 - The type of gene ID that we want to use to obtain the HGNC symbols. Must be one of **genebank**, **entrezgene** or **ensembl**.
 - The name of the column that contains the gene IDs. It can be accessed by `fData`.
 
-In the example data set, we can use for instance entrezgene IDs:
+In the example data set, we can use for instance entrezgene IDs. If  the same entry has several entrezgene IDs, we need to select just one like we did before:
+
+```{r entrezgene}
+head(fData(gse73578)[,"ENTREZ_GENE_ID"])  
+
+tmp <- strsplit(fData(gse73578)[, "ENTREZ_GENE_ID"], " /// ")
+fData(gse73578)$ENTREZ_GENE_ID <- unlist(lapply(tmp, function(x) x[1]))
+
+head(fData(gse73578)[,"ENTREZ_GENE_ID"]) 
+```
 
 ```{r get_hgnc_entrezgene}
-names(fData(gse73578))  
-
 # Get HGNC symbols from entrezgene IDs:
-gse73578 <- get_hgnc(x = gse73578, gene.id = "entrezgene", gene.col = "ENTREZ_GENE_ID")
+gse73578 <- get_hgnc(x = gse73578, key.type = "entrezid", key.col = "ENTREZ_GENE_ID")
 fData(gse73578)[1:5, 1:5]
 ```
 
@@ -181,7 +188,7 @@ Observe that column `hgnc_symbol` has been added to the annotation. Similarly, i
 
 ```{r genbank, eval=FALSE}
 # Get HGNC symbols from genBank accession numbers:
-gse73578 <- get_hgnc(x = gse73578, gene.id = "genbank", gene.col = "GB_ACC")
+gse73578 <- get_hgnc(x = gse73578, key.type = "genbank", key.col = "GB_ACC")
 ```
 
 Now `getEDY` can be applied with `gene.key = "hgnc_symbol"`:

@@ -25,20 +25,24 @@ get_hgnc <- function(x, key.type, key.col, ...){
   
   fData(x)$id.feature <- featureNames(x)
   query <- fData(x)[, key.col]
-  key.id <- toupper(key.id)
+  query <- query[!is.na(query)]
+  key.type <- toupper(key.type)
   key.types <- keytypes(EnsDb.Hsapiens.v86)
-  if (key.id%!in%key.types && key.id!="GENBANK"){
+  if (!(key.type%in%key.types) && key.type!="GENBANK"){
     stop("Invalid key.id. Allowed choices are: 'ENTREZID', 'EXONID', 'GENEBIOTYPE', 'GENEID', 'GENENAME', 'PROTDOMID', 'PROTEINDOMAINID', 'PROTEINDOMAINSOURCE', 'PROTEINID', 'SEQNAME', 'SEQSTRAND', 'SYMBOL', 'TXBIOTYPE', 'TXID', 'TXNAME', 'UNIPROTID' and 'GENBANK'")
   }
   #Get entrezgene from id
-  else if (key.id%in%key.types){
+  else if (key.type%in%key.types){
     hgnc_symbols <- select(EnsDb.Hsapiens.v86, keys = query, keytype = key.type,
            columns = c(key.type, "SYMBOL"))
     #Join to fData
     fData(x) <- merge(hgnc_symbols, fData(x), by.x = key.type, by.y = key.col)
+    number <- which(names(fData(x))=="SYMBOL")
+    names(fData(x))[number] <- "hgnc_symbol"
+    fData(x) <- fData(x)[!duplicated(fData(x)[, key.type]),]
     }
   else { 
-      list_entrez_id <- as.list(org.Hs.egENSEMBL2EG) 
+      list_entrez_id <- as.list(org.Hs.egACCNUM2EG) 
   
       id_entrezgenes <- list_entrez_id[query]
       id_entrezgenes <- id_entrezgenes[!is.na(names(id_entrezgenes))]
@@ -65,10 +69,10 @@ get_hgnc <- function(x, key.type, key.col, ...){
       
       #Join to fData
       fData(x) <- merge(hgnc_symbols, fData(x), by.x = "entrezgene", by.y = "entrezgene")
+      
+      #Delete duplicated ids
+      fData(x) <- fData(x)[!duplicated(fData(x)[,key.col]),]
   }
-
-  #Delete duplicated ids
-  fData(x) <- fData(x)[!duplicated(fData(x)[,key.col]),]
   
   #output
   x

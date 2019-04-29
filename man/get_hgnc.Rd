@@ -20,10 +20,8 @@ hgnc symbol from. It must be one of \code{'ENTREZID', 'EXONID',
 \code{fData}).}
 }
 \value{
-A \code{data.frame} containing the previous information in \code{x}
-  plus 5 more columns: \code{start_position} (of the gene),
-  \code{end_position} (of the gene), \code{chromosome_name},
-  \code{hgnc_symbol} and \code{entrezgene}.
+An \code{ExpressionSet} containing the previous information in \code{x}
+  plus the column \code{hgnc_symbol} containing the gene symbols.
 }
 \description{
 Obtaining hgnc symbol.
