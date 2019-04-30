@@ -11,7 +11,8 @@ getEDY(x, gender.var, male.key, gene.key, coef = 1.2, log = TRUE,
 \item{x}{An ExpressionSet from microarray experiment.}
 
 \item{gender.var}{A string indicating the name of the column in the table of
-phenotype (accessed by \code{pData}) that contains the gender of the individual.}
+phenotype (accessed by \code{pData}) that contains the gender of the
+individual.}
 
 \item{male.key}{A string indicating the symbol that idendtifies males (eg.:
 "male", "M", ...).}
@@ -19,8 +20,8 @@ phenotype (accessed by \code{pData}) that contains the gender of the individual.
 \item{gene.key}{A string indicating the name of the column that contains the
 Gene Symbol in the table of features (accessed by \code{fData}).}
 
-\item{coef}{value to consider an outlier when calling LOY. Default correspond to
-1.2 which keeps 5% of data in the normal case.}
+\item{coef}{Numerical. Value to consider an outlier when calling LOY. Default
+correspond to 1.2 which keeps 5\% of data in the normal case.}
 
 \item{log}{Logical. It is set to \code{TRUE} if the gene expression values
 are given in a logarithmic scale in the ExpressionSet and \code{FALSE}
@@ -43,12 +44,14 @@ A list containing 4 objects:
     an individual is considered to have EDY. 
   \item \code{eSet}: an ExpressionSet that contains only males from the
   initial ExpressionSet. It contains a new column named `hgnc_symbol` in
-  `fData`, which has the HUGO gene nomenclature comittee symbols.
-    
+  `fData` in case it did not have it from before, which has the HUGO gene
+  nomenclature comittee symbols.
+  
   }
 }
 \description{
-Detection of individuals with Extreme Downregulation of chromosome Y (EDY) from transcriptomic data
+Detection of individuals with Extreme Downregulation of chromosome Y (EDY)
+from transcriptomic data
 }
 \details{
 To assess EDY, we calculate the mean expression of chrY genes divided by the
