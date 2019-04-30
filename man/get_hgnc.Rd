@@ -20,8 +20,8 @@ hgnc symbol from. It must be one of \code{'ENTREZID', 'EXONID',
 \code{fData}).}
 }
 \value{
-An \code{ExpressionSet} containing the previous information in \code{x}
-  plus the column \code{hgnc_symbol} containing the gene symbols.
+An \code{ExpressionSet} containing the previous information in
+  \code{x} plus the column \code{hgnc_symbol} containing the gene symbols.
 }
 \description{
 Obtaining hgnc symbol.

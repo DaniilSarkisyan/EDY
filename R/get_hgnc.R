@@ -14,12 +14,11 @@
 #'   \code{key.type} in the table of features of the ExpressionSet (accessed by
 #'   \code{fData}).
 #' 
-#' @importFrom biomaRt useMart getBM
 #' @import org.Hs.eg.db
 #' @import EnsDb.Hsapiens.v86
 #' @export get_hgnc 
-#' @return An \code{ExpressionSet} containing the previous information in \code{x}
-#'   plus the column \code{hgnc_symbol} containing the gene symbols.
+#' @return An \code{ExpressionSet} containing the previous information in
+#'   \code{x} plus the column \code{hgnc_symbol} containing the gene symbols.
 
 get_hgnc <- function(x, key.type, key.col, ...){
   
@@ -39,9 +38,10 @@ get_hgnc <- function(x, key.type, key.col, ...){
     fData(x) <- merge(hgnc_symbols, fData(x), by.x = key.type, by.y = key.col)
     number <- which(names(fData(x))=="SYMBOL")
     names(fData(x))[number] <- "hgnc_symbol"
+    #Delete duplicated
     fData(x) <- fData(x)[!duplicated(fData(x)[, key.type]),]
     }
-  else { 
+  else if (key.type=="GENBANK"){ 
       list_entrez_id <- as.list(org.Hs.egACCNUM2EG) 
   
       id_entrezgenes <- list_entrez_id[query]
@@ -55,23 +55,19 @@ get_hgnc <- function(x, key.type, key.col, ...){
       }
       
       matrix_entr_id <- matrix(c(entrezgenes, id), ncol = 2)
-      colnames(matrix_entr_id) <- c("entrezgene", key.col)
+      colnames(matrix_entr_id) <- c("ENTREZID", key.col)
       
+      hgnc_symbols <- select(EnsDb.Hsapiens.v86, keys = entrezgenes, keytype = "ENTREZID",
+                             columns = c("ENTREZID", "SYMBOL"))
+      
+      #Join to previous matrix
+      matrix_entr_id <- merge(hgnc_symbols, matrix_entr_id, by.x = "ENTREZID", by.y ="ENTREZID")
       #Join to fData
-      fData(x) <-  merge(matrix_entr_id, fData(x), by.x = key.col, by.y = key.col)
-      
-      # Get hgnc_symbol from entrezgene
-      ensembl <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
-    
-      hgnc_symbols <- getBM(attributes = c("hgnc_symbol", "entrezgene"), 
-                            filters = "entrezgene",
-                            values = entrezgenes, mart = ensembl)
-      
-      #Join to fData
-      fData(x) <- merge(hgnc_symbols, fData(x), by.x = "entrezgene", by.y = "entrezgene")
-      
-      #Delete duplicated ids
-      fData(x) <- fData(x)[!duplicated(fData(x)[,key.col]),]
+      fData(x) <- merge(matrix_entr_id, fData(x), by.x = key.col, by.y = key.col)
+      number <- which(names(fData(x))=="SYMBOL")
+      names(fData(x))[number] <- "hgnc_symbol"
+      #Delete duplicated
+      fData(x) <- fData(x)[!duplicated(fData(x)[, "ENTREZID"]),]
   }
   
   #output

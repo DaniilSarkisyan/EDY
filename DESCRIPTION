@@ -9,7 +9,7 @@ Description: Detection of individuals with EDY and some helpful
     functions to prepare the data for the detection.
 License: MIT license
 Depends: R (>= 3.4.0)
-Imports: biomaRt, org.Hs.eg.db, Biobase, glmnet, ggplot2, caret, tidyverse, EnsDb.Hsapiens.v86
+Imports: org.Hs.eg.db, Biobase, glmnet, ggplot2, caret, tidyverse, EnsDb.Hsapiens.v86
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
