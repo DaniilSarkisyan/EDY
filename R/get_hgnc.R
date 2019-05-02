@@ -4,21 +4,20 @@
 #' end position of the gene and the chromosome name from genBank accession
 #' numbers, entrezgenes (NCBI gene IDs) or Ensembl stable IDs.
 #' @title Get hgnc symbol
-#' @param x An ExpressionSet.
+#' @param x An ExpressionSet or RangedSummarizedExperiment.
 #' @param key.type A string indicating the type of gene ID that we want to get
-#'   hgnc symbol from. It must be one of \code{'ENTREZID', 'EXONID',
-#'   'GENEBIOTYPE', 'GENEID', 'GENENAME', 'PROTDOMID', 'PROTEINDOMAINID',
-#'   'PROTEINDOMAINSOURCE', 'PROTEINID', 'SEQNAME', 'SEQSTRAND', 'SYMBOL',
-#'   'TXBIOTYPE', 'TXID', 'TXNAME', 'UNIPROTID' and 'GENBANK'}.
+#'   hgnc symbol from. It must be one of \code{refseq, uniprot, ensembl,
+#'   entrezgene} or \code{genbank}.
 #' @param key.col A string indicating the name of the column that contains the
 #'   \code{key.type} in the table of features of the ExpressionSet (accessed by
-#'   \code{fData}).
+#'   \code{fData}) or in the metadata of the rows in the
+#'   RangedSummarizedExperiment (accessed by \code{rowData}).
 #' 
 #' @import org.Hs.eg.db
-#' @import EnsDb.Hsapiens.v86
 #' @export get_hgnc 
-#' @return An \code{ExpressionSet} containing the previous information in
-#'   \code{x} plus the column \code{hgnc_symbol} containing the gene symbols.
+#' @return An \code{ExpressionSet} or \code{RangedSummarizedExperiment}
+#'   containing the previous information in \code{x} plus the column
+#'   \code{hgnc_symbol} containing the gene symbols.
 
 get_hgnc <- function(x, key.type, key.col, ...){
   

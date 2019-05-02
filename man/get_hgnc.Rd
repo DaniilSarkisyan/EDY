@@ -7,21 +7,21 @@
 get_hgnc(x, key.type, key.col, ...)
 }
 \arguments{
-\item{x}{An ExpressionSet.}
+\item{x}{An ExpressionSet or RangedSummarizedExperiment.}
 
 \item{key.type}{A string indicating the type of gene ID that we want to get
-hgnc symbol from. It must be one of \code{'ENTREZID', 'EXONID',
-'GENEBIOTYPE', 'GENEID', 'GENENAME', 'PROTDOMID', 'PROTEINDOMAINID',
-'PROTEINDOMAINSOURCE', 'PROTEINID', 'SEQNAME', 'SEQSTRAND', 'SYMBOL',
-'TXBIOTYPE', 'TXID', 'TXNAME', 'UNIPROTID' and 'GENBANK'}.}
+hgnc symbol from. It must be one of \code{refseq, uniprot, ensembl,
+entrezgene} or \code{genbank}.}
 
 \item{key.col}{A string indicating the name of the column that contains the
 \code{key.type} in the table of features of the ExpressionSet (accessed by
-\code{fData}).}
+\code{fData}) or in the metadata of the rows in the
+RangedSummarizedExperiment (accessed by \code{rowData}).}
 }
 \value{
-An \code{ExpressionSet} containing the previous information in
-  \code{x} plus the column \code{hgnc_symbol} containing the gene symbols.
+An \code{ExpressionSet} or \code{RangedSummarizedExperiment}
+  containing the previous information in \code{x} plus the column
+  \code{hgnc_symbol} containing the gene symbols.
 }
 \description{
 Obtaining hgnc symbol.

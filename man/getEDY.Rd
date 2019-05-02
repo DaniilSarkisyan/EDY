@@ -8,17 +8,19 @@ getEDY(x, gender.var, male.key, gene.key, coef = 1.2, log = TRUE,
   group.var, control.key, experiment.type, ...)
 }
 \arguments{
-\item{x}{An ExpressionSet from microarray experiment.}
+\item{x}{An ExpressionSet or RangedSummarizedExperiment from microarray or
+RNAseq experiments.}
 
 \item{gender.var}{A string indicating the name of the column in the table of
-phenotype (accessed by \code{pData}) that contains the gender of the
-individual.}
+phenotype (accessed by \code{pData} or \code{colData}) that contains the
+gender of the individual.}
 
 \item{male.key}{A string indicating the symbol that idendtifies males (eg.:
 "male", "M", ...).}
 
 \item{gene.key}{A string indicating the name of the column that contains the
-Gene Symbol in the table of features (accessed by \code{fData}).}
+Gene Symbol in the table of features (accessed by \code{fData} or
+\code{rowData}).}
 
 \item{coef}{Numerical. Value to consider an outlier when calling LOY. Default
 correspond to 1.2 which keeps 5\% of data in the normal case.}
@@ -28,10 +30,14 @@ are given in a logarithmic scale in the ExpressionSet and \code{FALSE}
 otherwise. Default is \code{TRUE}.}
 
 \item{group.var}{A string indicating the name of the column that contains the
-information about if the individual is case or control.}
+information about if the individual is case or control (accessed by
+\code{pData} or \code{colData}).}
 
 \item{control.key}{A string indicating the symbol that identifies control
 group (eg.: "control").}
+
+\item{experiment.type}{A string indicating if the data set is a
+\strong{microarray} or a \strong{RNAseq} experiment}
 }
 \value{
 A list containing 4 objects: 
@@ -42,11 +48,9 @@ A list containing 4 objects:
     of chromosome Y with regard the autosomal genes.
   \item \code{threshold}: a number indicating the threshold from which down 
     an individual is considered to have EDY. 
-  \item \code{eSet}: an ExpressionSet that contains only males from the
-  initial ExpressionSet. It contains a new column named `hgnc_symbol` in
-  `fData` in case it did not have it from before, which has the HUGO gene
-  nomenclature comittee symbols.
-  
+  \item \code{eSet} or \code{RangedSummarizedExperiment}: an ExpressionSet 
+    or RangedSummarizedExperiment that contains only males from the initial
+    data set.   
   }
 }
 \description{
@@ -62,4 +66,6 @@ group, or with all the individuals in case it does not exist such group:
 \emph{*IQR: Interquartile range}
 
 It indicates the trheshold from which down to consider EDY.
+
+For more information, please consult the vignette.
 }

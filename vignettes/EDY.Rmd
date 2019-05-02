@@ -165,7 +165,7 @@ If your dataset does not contain information about the gene symbol, the function
 The required inputs are:
 
 - An ExpressionSet.
-- The type of gene ID that we want to use to obtain the HGNC symbols. Must be one of It must be one of `ENTREZID`, `EXONID`, `GENEBIOTYPE`, `GENEID`, `GENENAME`, `PROTDOMID`, `PROTEINDOMAINID`, `PROTEINDOMAINSOURCE`, `PROTEINID`, `SEQNAME`, `SEQSTRAND`, `TXBIOTYPE`, `TXID`, `TXNAME`, `UNIPROTID` or `GENBANK`.
+- The type of gene ID that we want to use to obtain the HGNC symbols. Must be one of It must be one of `refseq`, `uniprot`, `ensembl`, `entrezgene` or `genbank`.
 - The name of the column that contains the gene IDs. It can be accessed by `fData`.
 
 In the example data set, we can use for instance entrezgene IDs. If  the same entry has several entrezgene IDs, we need to select just one like we did before:
