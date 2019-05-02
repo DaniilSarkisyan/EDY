@@ -30,66 +30,46 @@ get_hgnc <- function(x, key.type, key.col, ...){
     colData(x)$id.feature <- rownames(assay(x))
     query <- colData(x)[, key.col]
   }
-  query <- query[!is.na(query)]
-  key.type <- toupper(key.type)
-  key.types <- keytypes(EnsDb.Hsapiens.v86)
-  if (!(key.type%in%key.types) && key.type!="GENBANK"){
-    stop("Invalid key.id. Allowed choices are: 'ENTREZID', 'EXONID', 'GENEBIOTYPE', 'GENEID', 'GENENAME', 'PROTDOMID', 'PROTEINDOMAINID', 'PROTEINDOMAINSOURCE', 'PROTEINID', 'SEQNAME', 'SEQSTRAND', 'SYMBOL', 'TXBIOTYPE', 'TXID', 'TXNAME', 'UNIPROTID' and 'GENBANK'")
+  
+  key.type <- tolower(key.type)
+  key.types <- c("refseq", "uniprot", "ensembl", "entrezgene" )
+  if (!(key.type%in%key.types) && key.type!="genbank"){
+    stop("Invalid key.type. Allowed choices are: 'refseq', 'uniprot', 'ensembl', 'entrezgene' 
+         and 'genbank'")
   }
   #Get entrezgene from id
   else if (key.type%in%key.types){
-    hgnc_symbols <- select(EnsDb.Hsapiens.v86, keys = query, keytype = key.type,
-           columns = c(key.type, "SYMBOL"))
+    dictionary <- EDY::genome.annot$hgnc_symbol
+    names(dictionary) <- EDY::genome.annot[, key.type]
+    hgnc_symbol <- dictionary[query]
+    hgnc_symbol <- unname(hgnc_symbol)
     #Join to fData
     if (object.type == "ExpressionSet"){
-      fData(x) <- merge(hgnc_symbols, fData(x), by.x = key.type, by.y = key.col)
-      number <- which(names(fData(x))=="SYMBOL")
-      names(fData(x))[number] <- "hgnc_symbol"
-      #Delete duplicated
-      fData(x) <- fData(x)[!duplicated(fData(x)[, key.type]),]
+      fData(x) <- cbind(hgnc_symbol, fData(x))
     } else if (object.type == "RangedSummarizedExperiment"){
-      colData(x) <- merge(hgnc_symbols, colData(x), by.x = key.type, by.y = key.col)
-      number <- which(names(colData(x))=="SYMBOL")
-      names(colData(x))[number] <- "hgnc_symbol"
-      #Delete duplicated
-      colData(x) <- colData(x)[!duplicated(colData(x)[, key.type]),]
+      colData(x) <- cbind(hgnc_symbol, colData(x))
       }
     }
-  else if (key.type=="GENBANK"){ 
+  else if (key.type=="genbank"){ 
       list_entrez_id <- as.list(org.Hs.egACCNUM2EG) 
-  
-      id_entrezgenes <- list_entrez_id[query]
-      id_entrezgenes <- id_entrezgenes[!is.na(names(id_entrezgenes))]
+      
+      GB.ids <- names(list_entrez_id)  
+      dictionary <- unlist(list_entrez_id)
+      names(dictionary) <- GB.ids
     
-      id <- names(id_entrezgenes)
-    
-      entrezgenes <- c()
-      for (i in 1:length(id_entrezgenes)){
-        entrezgenes[i] <- id_entrezgenes[[i]]
-      }
+      entrezgenes <- unname(dictionary[query])
       
-      matrix_entr_id <- matrix(c(entrezgenes, id), ncol = 2)
-      colnames(matrix_entr_id) <- c("ENTREZID", key.col)
+      dictionary2 <- EDY::genome.annot$hgnc_symbol
+      names(dictionary2) <- EDY::genome.annot$entrezgene
       
-      hgnc_symbols <- select(EnsDb.Hsapiens.v86, keys = entrezgenes, keytype = "ENTREZID",
-                             columns = c("ENTREZID", "SYMBOL"))
-      
-      #Join to previous matrix
-      matrix_entr_id <- merge(hgnc_symbols, matrix_entr_id, by.x = "ENTREZID", by.y ="ENTREZID")
+      hgnc_symbol <- dictionary2[entrezgenes]
+     
       #Join to fData
       if (object.type == "ExpressionSet"){
-        fData(x) <- merge(matrix_entr_id, fData(x), by.x = key.col, by.y = key.col)
-        number <- which(names(fData(x))=="SYMBOL")
-        names(fData(x))[number] <- "hgnc_symbol"
-        #Delete duplicated
-        fData(x) <- fData(x)[!duplicated(fData(x)[, "ENTREZID"]),]
-      } else if (object.type == "RangedSummarizedExperiment"){
-        colData(x) <- merge(matrix_entr_id, colData(x), by.x = key.col, by.y = key.col)
-        number <- which(names(colData(x))=="SYMBOL")
-        names(colData(x))[number] <- "hgnc_symbol"
-        #Delete duplicated
-        colData(x) <- colData(x)[!duplicated(colData(x)[, "ENTREZID"]),]
-      }
+        fData(x) <- cbind(hgnc_symbol, fData(x))
+        } else if (object.type == "RangedSummarizedExperiment"){
+        colData(x) <- cbind(hgnc_symbol, colData(x))
+        }
   }
   
   #output
