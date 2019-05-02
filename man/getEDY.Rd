@@ -5,7 +5,7 @@
 \title{getEDY}
 \usage{
 getEDY(x, gender.var, male.key, gene.key, coef = 1.2, log = TRUE,
-  group.var, control.key, ...)
+  group.var, control.key, experiment.type, ...)
 }
 \arguments{
 \item{x}{An ExpressionSet from microarray experiment.}
