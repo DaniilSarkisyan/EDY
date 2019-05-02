@@ -22,8 +22,14 @@
 
 get_hgnc <- function(x, key.type, key.col, ...){
   
-  fData(x)$id.feature <- featureNames(x)
-  query <- fData(x)[, key.col]
+  object.type <- class(x)[1]
+  if (object.type == "ExpressionSet"){
+    fData(x)$id.feature <- featureNames(x)
+    query <- fData(x)[, key.col]
+  } else if (object.type == "RangedSummarizedExperiment"){
+    colData(x)$id.feature <- rownames(assay(x))
+    query <- colData(x)[, key.col]
+  }
   query <- query[!is.na(query)]
   key.type <- toupper(key.type)
   key.types <- keytypes(EnsDb.Hsapiens.v86)
@@ -35,11 +41,19 @@ get_hgnc <- function(x, key.type, key.col, ...){
     hgnc_symbols <- select(EnsDb.Hsapiens.v86, keys = query, keytype = key.type,
            columns = c(key.type, "SYMBOL"))
     #Join to fData
-    fData(x) <- merge(hgnc_symbols, fData(x), by.x = key.type, by.y = key.col)
-    number <- which(names(fData(x))=="SYMBOL")
-    names(fData(x))[number] <- "hgnc_symbol"
-    #Delete duplicated
-    fData(x) <- fData(x)[!duplicated(fData(x)[, key.type]),]
+    if (object.type == "ExpressionSet"){
+      fData(x) <- merge(hgnc_symbols, fData(x), by.x = key.type, by.y = key.col)
+      number <- which(names(fData(x))=="SYMBOL")
+      names(fData(x))[number] <- "hgnc_symbol"
+      #Delete duplicated
+      fData(x) <- fData(x)[!duplicated(fData(x)[, key.type]),]
+    } else if (object.type == "RangedSummarizedExperiment"){
+      colData(x) <- merge(hgnc_symbols, colData(x), by.x = key.type, by.y = key.col)
+      number <- which(names(colData(x))=="SYMBOL")
+      names(colData(x))[number] <- "hgnc_symbol"
+      #Delete duplicated
+      colData(x) <- colData(x)[!duplicated(colData(x)[, key.type]),]
+      }
     }
   else if (key.type=="GENBANK"){ 
       list_entrez_id <- as.list(org.Hs.egACCNUM2EG) 
@@ -63,11 +77,19 @@ get_hgnc <- function(x, key.type, key.col, ...){
       #Join to previous matrix
       matrix_entr_id <- merge(hgnc_symbols, matrix_entr_id, by.x = "ENTREZID", by.y ="ENTREZID")
       #Join to fData
-      fData(x) <- merge(matrix_entr_id, fData(x), by.x = key.col, by.y = key.col)
-      number <- which(names(fData(x))=="SYMBOL")
-      names(fData(x))[number] <- "hgnc_symbol"
-      #Delete duplicated
-      fData(x) <- fData(x)[!duplicated(fData(x)[, "ENTREZID"]),]
+      if (object.type == "ExpressionSet"){
+        fData(x) <- merge(matrix_entr_id, fData(x), by.x = key.col, by.y = key.col)
+        number <- which(names(fData(x))=="SYMBOL")
+        names(fData(x))[number] <- "hgnc_symbol"
+        #Delete duplicated
+        fData(x) <- fData(x)[!duplicated(fData(x)[, "ENTREZID"]),]
+      } else if (object.type == "RangedSummarizedExperiment"){
+        colData(x) <- merge(matrix_entr_id, colData(x), by.x = key.col, by.y = key.col)
+        number <- which(names(colData(x))=="SYMBOL")
+        names(colData(x))[number] <- "hgnc_symbol"
+        #Delete duplicated
+        colData(x) <- colData(x)[!duplicated(colData(x)[, "ENTREZID"]),]
+      }
   }
   
   #output
