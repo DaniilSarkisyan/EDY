@@ -20,8 +20,8 @@ print.EDY <- function(x, ...){
   if (names(x)[4]=="eSet"){
     cat("\n$eSet:\n")
     print(x$eSet)
-  } else if (nameS(x)[4]=="RangedSummarizedExperiment"){
-    cat("\n$RangedSummarizedExperiment:")
+  } else if (names(x)[4]=="RangedSummarizedExperiment"){
+    cat("\n$RangedSummarizedExperiment:\n")
     print(x$RangedSummarizedExperiment)
   }
 }
