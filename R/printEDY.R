@@ -17,10 +17,11 @@ print.EDY <- function(x, ...){
   cat("\n$EDYcontinuous: individual relative expression of chrY")
   cat("\n$threshold: ")
   cat(x$threshold)
-  if (x$eSet){
+  if (names(x)[4]=="eSet"){
     cat("\n$eSet:\n")
-  } else if (x$RangedSummarizedExperiment){
-    cat("\n$RangedSummarizedExperiment")
+    print(x$eSet)
+  } else if (nameS(x)[4]=="RangedSummarizedExperiment"){
+    cat("\n$RangedSummarizedExperiment:")
+    print(x$RangedSummarizedExperiment)
   }
-  print(x[4])
 }

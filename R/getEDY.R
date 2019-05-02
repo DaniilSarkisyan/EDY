@@ -64,9 +64,6 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
       #Add column with the hgnc symbol information to fData
       if (gene.key != "hgnc_symbol"){
         fData(x)$id.feature <- featureNames(x)
-        fData(x) <- merge(EDY::annot, fData(x), 
-                          by.x = "hgnc_symbol", 
-                          by.y = gene.key)
         }
       
       annot.expr <- fData(x)
@@ -74,12 +71,12 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
       #Select from genes in gene.expr those that we know the hgnc symbol
       gene.expr <- exprs(x)[rownames(exprs(x))%in%annot.expr$id.feature,]
       #Replace gene ID for hgnc symbol
-      rownames(gene.expr) <- annot.expr[, 'hgnc_symbol']
+      rownames(gene.expr) <- annot.expr[, gene.key]
       #Select those genes that belong to chrY
-      exprY <- gene.expr[annot.expr[, 'hgnc_symbol']%in%chrY$hgnc_symbol,]
+      exprY <- gene.expr[annot.expr[, gene.key]%in%EDY::chrY.genes$hgnc_symbol,]
       exprY <- exprY[complete.cases(exprY),]
       #Select those genes that belong to the rest of the genome
-      exprRef <- gene.expr[annot.expr[, 'hgnc_symbol']%in%chrRef$hgnc_symbol,]
+      exprRef <- gene.expr[annot.expr[, gene.key]%in%EDY::autosomal.genes$hgnc_symbol,]
       exprRef <- exprRef[complete.cases(exprRef),]
       
   }
@@ -95,9 +92,6 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
     #Add column with the hgnc symbol information to fData
     if (gene.key != "hgnc_symbol"){
       rowData(x)$id.feature <- rownames(assay(x))
-      #rowData(x) <- merge(EDY::annot, rowData(x), 
-               #         by.x = "hgnc_symbol", 
-                #        by.y = gene.key)
     }
     
     annot.expr <- data.frame(rowData(x))
@@ -107,10 +101,10 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
     #Replace gene ID for hgnc symbol
     rownames(gene.expr) <- annot.expr[, gene.key]
     #Select those genes that belong to chrY
-    exprY <- gene.expr[annot.expr[, gene.key]%in%EDY::chrY$hgnc_symbol,]
+    exprY <- gene.expr[annot.expr[, gene.key]%in%EDY::chrY.genes$hgnc_symbol,]
     exprY <- exprY[complete.cases(exprY),]
     #Select those genes that belong to the rest of the genome
-    exprRef <- gene.expr[annot.expr[, gene.key]%in%EDY::chrRef$hgnc_symbol,]
+    exprRef <- gene.expr[annot.expr[, gene.key]%in%EDY::autosomal.genes$hgnc_symbol,]
     exprRef <- exprRef[complete.cases(exprRef),]
     
   }

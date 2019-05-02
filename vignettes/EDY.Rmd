@@ -124,7 +124,7 @@ Once this information is obtained, the EDY status of **male** samples can be obt
 ```{r getEDY}
 edy.gse73578 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
                        male.key = 'M', 
-                       gene.key = 'Symbol')
+                       gene.key = 'Symbol', experiment.type = "microarray")
 
 edy.gse73578
 ```
@@ -197,7 +197,7 @@ Now `getEDY` can be applied with `gene.key = "hgnc_symbol"`:
 ```{r getEDY_hgnc_symbol}
 edy.gse73578_2 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
                        male.key = 'M', 
-                       gene.key = 'hgnc_symbol', log = TRUE)
+                       gene.key = 'hgnc_symbol', experiment.type = "microarray")
 
 edy.gse73578_2
 plot(edy.gse73578_2)
