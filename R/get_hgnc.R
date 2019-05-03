@@ -4,7 +4,7 @@
 #' end position of the gene and the chromosome name from genBank accession
 #' numbers, entrezgenes (NCBI gene IDs) or Ensembl stable IDs.
 #' @title Get hgnc symbol
-#' @param x An ExpressionSet or RangedSummarizedExperiment.
+#' @param x An ExpressionSet, a RangedSummarizedExperiment or a vector of IDs.
 #' @param key.type A string indicating the type of gene ID that we want to get
 #'   hgnc symbol from. It must be one of \code{refseq, uniprot, ensembl,
 #'   entrezgene} or \code{genbank}.
@@ -15,9 +15,11 @@
 #' 
 #' @import org.Hs.eg.db
 #' @export get_hgnc 
-#' @return An \code{ExpressionSet} or \code{RangedSummarizedExperiment}
-#'   containing the previous information in \code{x} plus the column
-#'   \code{hgnc_symbol} containing the gene symbols.
+#' @return In case \code{x} is a vector, the output is another vector with the
+#'   hgnc symbols and the query IDs as names. Otherwise, the output is an
+#'   \code{ExpressionSet} or \code{RangedSummarizedExperiment} containing the
+#'   previous information in \code{x} plus the column \code{hgnc_symbol}
+#'   containing the gene symbols.
 
 get_hgnc <- function(x, key.type, key.col, ...){
   
@@ -28,7 +30,11 @@ get_hgnc <- function(x, key.type, key.col, ...){
   } else if (object.type == "RangedSummarizedExperiment"){
     rowData(x)$id.feature <- rownames(assay(x))
     query <- rowData(x)[, key.col]
-  }
+  } else if (is.vector(x)){
+    query <- x
+  } else {
+      stop("Invalid argument 'x'. It must be a vector, an ExpressionSet or a RangedSummarizedExperiment")
+    }
   
   key.type <- tolower(key.type)
   key.types <- c("refseq", "uniprot", "ensembl", "entrezgene" )
@@ -47,6 +53,8 @@ get_hgnc <- function(x, key.type, key.col, ...){
       fData(x) <- cbind(hgnc_symbol, fData(x))
     } else if (object.type == "RangedSummarizedExperiment"){
       rowData(x) <- cbind(hgnc_symbol, rowData(x))
+    } else {
+      x <- dictionary[query]
       }
     }
   else if (key.type=="genbank"){ 
@@ -68,6 +76,8 @@ get_hgnc <- function(x, key.type, key.col, ...){
         fData(x) <- cbind(hgnc_symbol, fData(x))
         } else if (object.type == "RangedSummarizedExperiment"){
         rowData(x) <- cbind(hgnc_symbol, rowData(x))
+        } else {
+          x <- dictionary2[entrezgenes]
         }
   }
   

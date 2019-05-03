@@ -10,7 +10,9 @@
 #' @import caret
 #' @import tidyverse
 #' @export predictEDY
-#' @return A vector with EDY status (No, Yes).
+#' @return A vector with EDY status (No, Yes) or, in case 'x' is an
+#'   ExpressionSet, the same ExpressionSet with a new column in \code{pData}
+#'   named \code{edy.pred} which contains the EDY status prediction.
 #' 
 predictEDY <- function(x, ...){
   if (is.matrix(x)) {
@@ -52,7 +54,13 @@ predictEDY <- function(x, ...){
   cat(paste0("      CI95% : (", accuracy[3], ", ", accuracy[4], ")\n"))
   
   edy.pred <- mod %>% predict(x.sel, type="class") %>% as.factor()
-  names(edy.pred) <- rownames(x.sel)
-  return(edy.pred)
+  
+  if (inherits(x, "ExpressionSet")){
+    pData(x) <- cbind(pData(x), edy.pred)
+    return(x)
+  } else {
+    names(edy.pred) <- rownames(x.sel)
+    return(edy.pred)
+  }
 }
   
