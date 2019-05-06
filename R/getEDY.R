@@ -37,6 +37,7 @@
 #'   \strong{microarray} or a \strong{RNAseq} experiment
 #'   
 #' @import Biobase
+#' @import SummarizedExperiment
 #' @export getEDY
 #' @return A list containing 4 objects: 
 #' \itemize{ 
@@ -122,8 +123,8 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
   if (experiment.type=="rnaseq"){
     
     if (log) {
-      Ry <- sweep((exprY+1), 2, FUN="-", 
-                  apply((exprRef+1), 2, mean))
+      Ry <- sweep((exprY), 2, FUN="-", 
+                  apply((exprRef), 2, mean))
       }else{ 
         Ry <- sweep(log2(exprY+1), 2, FUN="-", 
                   apply(log2(exprRef+1), 2, mean))}

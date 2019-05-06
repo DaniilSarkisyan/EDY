@@ -61,14 +61,16 @@ library(tidyverse)
 library(Biobase)
 ```
 
-EDY can be computed using `getEDY()` function from `EDY` package. The main input is an object of class `ExpressionSet`. This function requires also some information, including:
+EDY can be computed using `getEDY()` function from `EDY` package. The main input is an object of class `ExpressionSet` or `RangedSummarizedExperiment`. This function requires also some information, including:
 
-- Whether the gene expression (accessed with `exprs`) is in logarithmic scale or not. 
-- Which column from the annotation (accessed with `fData`) contains the `Gene symbol`. This is required to get the relative expression of chromosome Y.
-- Which column from the metadata (accessed with `pData`) contains the information about the `gender` and the symbol that codes for `males`. This is required since EDY is computed only in male samples.
-- In case of having a case/control study, which column from the metadata (accessed with `pData`) contains the information about the groups, and the symbol that codes for control. When this information is available, the $Ry$ value is estimated only in controls. 
+- The type of experiment the data come from, `microarray` or `RNAseq`.
+- Whether the gene expression (accessed with `exprs` in `ExpressionSets` or with `assay` in `RangedSummarizedExperiments`) is in logarithmic scale or not. 
+- Which column from the annotation (accessed with `fData` in `ExpressionSets` or with `rowData` in `RangedSummarizedExperiments`) contains the `Gene symbol`. This is required to get the relative expression of chromosome Y.
+- Which column from the metadata (accessed with `pData` in `ExpressionSets` or with `colData` in `RangedSummarizedExperiments`) contains the information about the `gender` and the symbol that codes for `males`. This is required since EDY is computed only in male samples.
+- In case of having a case/control study, which column from the metadata (accessed with `pData` in `ExpressionSets` or with `colData` in `RangedSummarizedExperiments`) contains the information about the groups, and the symbol that codes for control. When this information is available, the $Ry$ value is estimated only in controls. 
 
-Let us illustrate how to compute EDY for a real data set available at GEO. It contains information about gene expression in children with acute lymphoblastic leukemia that has been treated or not with glucocorticoids (GEO accesion number GSE73578). Data can be downloaded into R by:
+
+Let us illustrate how to compute EDY for a real `ExpressionSet` from a microarray experiment available at GEO. It contains information about gene expression in children with acute lymphoblastic leukemia that has been treated or not with glucocorticoids (GEO accesion number GSE73578). Data can be downloaded into R by:
 
 ```{r data, eval = FALSE}
 library(GEOquery)
@@ -81,13 +83,13 @@ In order to facilitate reproducibility, we have also include this `ExpressionSet
 gse73578
 ```
 
-The information about whether the expression data is in logarithmic scale or not should be specified in the description of the data set, but it can also be checked with `exprs`. In this case, it is logarithmic: 
+The information about whether the expression data is in logarithmic scale or not should be specified in the description of the data set, but it can also be checked with `exprs` (or `assay` in `RangedSummarizedExperiments`). In this case, it is logarithmic: 
 
 ```{r info}
 exprs(gse73578)[1:5, 1:5]
 ```
 
-The information about gene symbol can be accessed by `fData`. If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, the gene symbol column is named `Gene Symbol`:
+The information about gene symbol can be accessed by `fData` (or `rowData` in `RangedSummarizedExperiments`). If you cannot find it there, please see [Missing information](#missing-information) section below. In this case, the gene symbol column is named `Gene Symbol`:
 
 ```{r info2}
 fData(gse73578)[1:5,1:4]
@@ -104,7 +106,7 @@ fData(gse73578)$Symbol <- unlist(lapply(tmp, function(x) x[1]))
 head(fData(gse73578)[,c("Gene Symbol","Symbol")])
 ```
 
-The information about the sex of individuals must be found using `pData`. In this case, gender column is called `Sex:ch1` and males key is `M`. If, for some reason, your data do not contain this information, this can be estimated from expression data (see [Missing information](#missing-information) section below).
+The information about the sex of individuals must be found using `pData` (or `colData` in `RangedSummarizedExperiments`). In this case, gender column is called `Sex:ch1` and males key is `M`. If, for some reason, your data do not contain this information, this can be estimated from expression data (see [Missing information](#missing-information) section below).
 
 ```{r info3}
 names(pData(gse73578))
@@ -129,7 +131,7 @@ edy.gse73578 <- getEDY(x = gse73578, gender.var = 'Sex:ch1',
 edy.gse73578
 ```
 
-Notice that the argument `log=TRUE` has be omitted in the function since this is the default value. This function returns an `ExpressionSet` object having EDY status in a new variable called `EDY` 
+Notice that the argument `log = TRUE` has be omitted in the function since this is the default value. This function returns an `ExpressionSet` object having EDY status in a new variable called `EDY` 
 
 ```{r tableEDY}
 table(edy.gse73578$EDY)
@@ -153,22 +155,21 @@ EDYindividuals
 
 In this section we are describing how to obtain some of the required information to estimate EDY. It includes examples about how to get gender of individuals or gene symbol that is required to select probes from chromosome Y.
 
-### Gender of individuals
+## Gender of individuals
 
-In case your dataset does not contain information about the sex of the individuals, you can assess it using [massiR].
+In case your data set comes from a microarray experiment and it does not contain information about the gender of the individuals, you can assess it using [massiR].
 
-### Gene Symbol
+## Gene Symbol
 
-If your dataset does not contain information about the gene symbol, the function `get_hgnc` can be used to get the hgnc (HUGO gene nomenclature committee) symbols from genBank accession numbers, entrezgenes (NCBI gene IDs) or other types of identifiers. This function uses the package [org.Hs.eg.db] when we want to obtain the symbols from genBank accession numbers. For the rest of the cases, it uses the package [EnsDb.Hsapiens.v86]. [Here] you can find more information about how to use the package and explore it contents.
-
+If your dataset does not contain information about the gene symbol, the function `get_hgnc` can be used to get the hgnc (HUGO gene nomenclature committee) symbols from genBank accession numbers, entrezgenes (NCBI gene IDs) or other types of identifiers. This function uses dictionaries constructed from the information available at [genenames.org] and, additionally, it uses the package [org.Hs.eg.db] when we need to obtain the gene symbols from genBank accession numbers.
 
 The required inputs are:
 
-- An ExpressionSet.
-- The type of gene ID that we want to use to obtain the HGNC symbols. Must be one of It must be one of `refseq`, `uniprot`, `ensembl`, `entrezgene` or `genbank`.
+- An `ExpressionSet`, a `RangedSummarizedExperiment` or a vector of IDs.
+- The type of gene ID that we want to use to obtain the HGNC symbols. It must be one of `refseq`, `uniprot`, `ensembl`, `entrezgene` or `genbank`.
 - The name of the column that contains the gene IDs. It can be accessed by `fData`.
 
-In the example data set, we can use for instance entrezgene IDs. If  the same entry has several entrezgene IDs, we need to select just one like we did before:
+In the example data set, we can use for instance entrezgene IDs. If  the same entry has several entrezgene IDs, we need to select just one:
 
 ```{r entrezgene}
 head(fData(gse73578)[,"ENTREZ_GENE_ID"])  
@@ -248,4 +249,4 @@ table(edy.prediction)
 [The Cancer Genome Atlas (TCGA)]: https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga
 [EnsDb.Hsapiens.v86]: http://bioconductor.org/packages/release/data/annotation/manuals/EnsDb.Hsapiens.v86/man/EnsDb.Hsapiens.v86.pdf
 [org.Hs.eg.db]: https://bioconductor.org/packages/release/data/annotation/manuals/org.Hs.eg.db/man/org.Hs.eg.db.pdf
-[Here]: http://bioconductor.org/packages/release/bioc/vignettes/ensembldb/inst/doc/ensembldb.html#8_using_ensdb_objects_in_the_annotationdbi_framework
+[genenames.org]: https://www.genenames.org/download/custom/
