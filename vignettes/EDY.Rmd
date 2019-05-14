@@ -40,7 +40,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "",
 # Purpose of this package
 
 The aim of this package is to help the user to detect individuals who present extreme downregulation of chromosome Y (EDY) from microarray or RNA-seq experiments. For each individual, we measured the relative expression of the entire chromosome Y with respect to the autosomes. For $n$ probes (exons) in
-chromosome Y, with $x_i$ intensity (read counts) for the $i$-th probe, we compute 
+chromosome Y, with $x_i$ intensity (read counts) for the $i$-th probe, we computed 
 $y=1/n \sum_{i=1}^N \log_2(x_i)$ as a measure of the average expression of chromosome Y. Likewise, for $m$ probes in the autosomes, we computed the mean expression of autosomes $a = 1/m \sum_{i=1}^M \log_2(x_i)$ [NOTE: for RNAseq data $\log_2(x_i + 1)$ is computed to avoid problems with zero counts]. The
 relative amount of an individual's Y expression with respect to the individual's autosomes was then
 $Ry=y-a$, and, in a population sample, the individual $j$ was considered with EDY if

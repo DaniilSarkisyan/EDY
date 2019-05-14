@@ -1,8 +1,7 @@
-#' Obtaining hgnc symbol.
+#' Obtaining HUGO gene nomenclature committee (hgnc) symbol from genBank
+#' accession numbers, entrezgenes (NCBI gene IDs), RefReq IDs, UniProt IDs or
+#' Ensembl stable IDs.
 #'
-#' Get HUGO gene nomenclature committee (hgnc) symbol as well as the start and
-#' end position of the gene and the chromosome name from genBank accession
-#' numbers, entrezgenes (NCBI gene IDs) or Ensembl stable IDs.
 #' @title Get hgnc symbol
 #' @param x An ExpressionSet, a RangedSummarizedExperiment or a vector of IDs.
 #' @param key.type A string indicating the type of gene ID that we want to get

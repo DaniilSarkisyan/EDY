@@ -1,39 +1,44 @@
 #' Detection of individuals with Extreme Downregulation of chromosome Y (EDY)
 #' from transcriptomic data
 #'
-#' To assess EDY, we calculate the mean expression of chrY genes divided by the
-#' mean expression of genes in the rest of the genome (for each individual).
-#' Now, the following formulae is applied only with individuals in the control
-#' group, or with all the individuals in case it does not exist such group:
-#' \deqn{Threshold = median - 1.2 · IQR}
-#' \emph{*IQR: Interquartile range}
-#' 
-#' It indicates the trheshold from which down to consider EDY.
-#' 
-#' For more information, please consult the vignette.
+#' To assess EDY, the function measures the relative expression of the entire
+#' chromosome Y with respect to the autosomes for each individual. For \emph{n}
+#' probes (exons) in chromosome Y, with \eqn{x{i}} intensity (read counts) for
+#' the \emph{i-th} probe, it computes \eqn{y = 1/n  \sumlog_2(x{i}) } as a
+#' measure of the average expression of chromosome Y (summation limits between
+#' \emph{i=1} and \emph{N}). Likewise, for \emph{m} probes in the autosomes, the
+#' function computes the mean expression of autosomes \eqn{a = 1/m
+#' \sumlog_2(x{i})} (summation limits between \emph{i=1} and \emph{M})
+#' [\strong{NOTE:} for RNAseq data \eqn{log_2(x{i} + 1)} is computed to avoid
+#' problems with zero counts]. The relative amount of an individual's Y
+#' expression with respect to the individual's autosomes is then \eqn{Ry = y -
+#' a}, and, in a population sample, the individual \emph{j} is considered with
+#' EDY if \deqn{Ry{j} < median(Ry) - 1.2 · IQR(Ry)}
+#'
+#' where IQR is the inter-quartile range across the sample.
 #'
 #' @title getEDY
 #' @param x An ExpressionSet or RangedSummarizedExperiment from microarray or
 #'   RNAseq experiments.
 #' @param gender.var A string indicating the name of the column in the table of
 #'   phenotype (accessed by \code{pData} or \code{colData}) that contains the
-#'   gender of the individual.
-#' @param male.key A string indicating the symbol that idendtifies males (eg.:
+#'   gender of the individuals.
+#' @param male.key A string indicating the symbol that idendtifies males (e.g.,
 #'   "male", "M", ...).
 #' @param gene.key A string indicating the name of the column that contains the
 #'   Gene Symbol in the table of features (accessed by \code{fData} or
 #'   \code{rowData}).
-#' @param coef Numerical. Value to consider an outlier when calling LOY. Default
+#' @param coef Numerical. Value to consider an outlier when calling getEDY. Default
 #'   correspond to 1.2 which keeps 5\% of data in the normal case.
 #' @param log Logical. It is set to \code{TRUE} if the gene expression values
-#'   are given in a logarithmic scale in the ExpressionSet and \code{FALSE}
+#'   are given in a logarithmic scale in the data set and \code{FALSE}
 #'   otherwise. Default is \code{TRUE}.
 #' @param group.var A string indicating the name of the column that contains the
-#'   information about if the individual is case or control (accessed by
+#'   information about whether the individual is case or control (accessed by
 #'   \code{pData} or \code{colData}).
 #' @param control.key A string indicating the symbol that identifies control
-#'   group (eg.: "control").
-#' @param experiment.type A string indicating if the data set is a
+#'   group (e.g., "control").
+#' @param experiment.type A string indicating whether the data set is a
 #'   \strong{microarray} or a \strong{RNAseq} experiment
 #'   
 #' @import Biobase
@@ -49,7 +54,8 @@
 #'     an individual is considered to have EDY. 
 #'   \item \code{eSet} or \code{RangedSummarizedExperiment}: an ExpressionSet 
 #'     or RangedSummarizedExperiment that contains only males from the initial
-#'     data set.   
+#'     data set. It contains a new column in \code{pData} or \code{colData}
+#'     containing the EDY status of each individual.
 #'   }
 
 getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2, 

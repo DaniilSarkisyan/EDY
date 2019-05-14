@@ -2,14 +2,14 @@
 % Please edit documentation in R/predictEDY.R
 \name{predictEDY}
 \alias{predictEDY}
-\title{predictEDY}
+\title{EDY prediction}
 \usage{
 predictEDY(x, ...)
 }
 \arguments{
-\item{x}{A matrix with CpGs in rows, samples in columns and 
-CpG names in the rowname or a data.frame with individuals/samples
-in columns, being the first column the CpG name or an ExpressionSet}
+\item{x}{An ExpressionSet \emph{or} a matrix with CpGs in rows, samples in columns and
+CpG names in the rowname \emph{or} a data.frame with individuals/samples in
+columns, being the first column the CpG name.}
 }
 \value{
 A vector with EDY status (No, Yes) or, in case 'x' is an

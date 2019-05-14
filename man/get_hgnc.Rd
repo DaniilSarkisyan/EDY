@@ -26,10 +26,7 @@ In case \code{x} is a vector, the output is another vector with the
   containing the gene symbols.
 }
 \description{
-Obtaining hgnc symbol.
-}
-\details{
-Get HUGO gene nomenclature committee (hgnc) symbol as well as the start and
-end position of the gene and the chromosome name from genBank accession
-numbers, entrezgenes (NCBI gene IDs) or Ensembl stable IDs.
+Obtaining HUGO gene nomenclature committee (hgnc) symbol from genBank
+accession numbers, entrezgenes (NCBI gene IDs), RefReq IDs, UniProt IDs or
+Ensembl stable IDs.
 }

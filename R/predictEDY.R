@@ -2,10 +2,10 @@
 #' from methylation data
 #'
 #' Predicts individuals' EDY status
-#' @title predictEDY
-#' @param x A matrix with CpGs in rows, samples in columns and 
-#' CpG names in the rowname or a data.frame with individuals/samples
-#' in columns, being the first column the CpG name or an ExpressionSet
+#' @title EDY prediction
+#' @param x An ExpressionSet \emph{or} a matrix with CpGs in rows, samples in columns and
+#'   CpG names in the rowname \emph{or} a data.frame with individuals/samples in
+#'   columns, being the first column the CpG name.
 #' @import Biobase
 #' @import caret
 #' @import tidyverse
