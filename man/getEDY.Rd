@@ -62,12 +62,12 @@ from transcriptomic data
 To assess EDY, the function measures the relative expression of the entire
 chromosome Y with respect to the autosomes for each individual. For \emph{n}
 probes (exons) in chromosome Y, with \eqn{x{i}} intensity (read counts) for
-the \emph{i-th} probe, it computes \eqn{y = 1/n  \sumlog_2(x{i}) } as a
+the \emph{i-th} probe, it computes \eqn{y = 1/n ·  \sumlog2(x{i}) } as a
 measure of the average expression of chromosome Y (summation limits between
 \emph{i=1} and \emph{N}). Likewise, for \emph{m} probes in the autosomes, the
-function computes the mean expression of autosomes \eqn{a = 1/m
-\sumlog_2(x{i})} (summation limits between \emph{i=1} and \emph{M})
-[\strong{NOTE:} for RNAseq data \eqn{log_2(x{i} + 1)} is computed to avoid
+function computes the mean expression of autosomes \eqn{a = 1/m ·
+\sumlog2(x{i})} (summation limits between \emph{i=1} and \emph{M})
+[\strong{NOTE:} for RNAseq data \eqn{log2(x{i} + 1)} is computed to avoid
 problems with zero counts]. The relative amount of an individual's Y
 expression with respect to the individual's autosomes is then \eqn{Ry = y -
 a}, and, in a population sample, the individual \emph{j} is considered with
