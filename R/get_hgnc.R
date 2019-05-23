@@ -29,26 +29,9 @@ get_hgnc <- function(x, key.type, key.col, ...){
   } else if (object.type == "RangedSummarizedExperiment"){
     colData(x)$id.feature <- rownames(assay(x))
     query <- colData(x)[, key.col]
-  }
-  query <- query[!is.na(query)]
-  key.type <- toupper(key.type)
-  key.types <- AnnotationDbi::keytypes(EnsDb.Hsapiens.v86)
-  if (!(key.type%in%key.types) && key.type!="GENBANK"){
-    stop("Invalid key.id. Allowed choices are: 'ENTREZID', 'EXONID', 'GENEBIOTYPE', 'GENEID', 'GENENAME', 'PROTDOMID', 'PROTEINDOMAINID', 'PROTEINDOMAINSOURCE', 'PROTEINID', 'SEQNAME', 'SEQSTRAND', 'SYMBOL', 'TXBIOTYPE', 'TXID', 'TXNAME', 'UNIPROTID' and 'GENBANK'")
-  }
-  #Get entrezgene from id
-  else if (key.type%in%key.types){
-    hgnc_symbols <- AnnotationDbi::select(EnsDb.Hsapiens.v86, 
-                                          keys = query, 
-                                          keytype = key.type,
-                                          columns = c(key.type, "SYMBOL"))
-    rowData(x)$id.feature <- rownames(assay(x))
-    query <- rowData(x)[, key.col]
-  } else if (is.vector(x)){
-    query <- x
   } else {
-      stop("Invalid argument 'x'. It must be a vector, an ExpressionSet or a RangedSummarizedExperiment")
-    }
+    query <- x
+  } 
   
   key.type <- tolower(key.type)
   key.types <- c("refseq", "uniprot", "ensembl", "entrezgene" )
@@ -80,10 +63,6 @@ get_hgnc <- function(x, key.type, key.col, ...){
     
       entrezgenes <- unname(dictionary[query])
       
-      hgnc_symbols <- AnnotationDbi::select(EnsDb.Hsapiens.v86, 
-                                            keys = entrezgenes, 
-                                            keytype = "ENTREZID",
-                                            columns = c("ENTREZID", "SYMBOL"))
       dictionary2 <- EDY::genome.annot$hgnc_symbol
       names(dictionary2) <- EDY::genome.annot$entrezgene
       hgnc_symbol <- unname(dictionary2[entrezgenes])

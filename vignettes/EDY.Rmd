@@ -194,7 +194,7 @@ Observe that column `hgnc_symbol` has been added to the annotation. Similarly, i
 # Get HGNC symbols from genBank accession numbers:
 tmp <- strsplit(fData(GSE50774.expr)[, "GB_ACC"], " /// ")
 fData(GSE50774.expr)$GB_ACC <- unlist(lapply(tmp, function(x) x[1]))
-GSE50774.expr_2 <- get_hgnc(x = gse73578, key.type = "genbank", key.col = "GB_ACC")
+GSE50774.expr_2 <- get_hgnc(x = GSE50774.expr, key.type = "genbank", key.col = "GB_ACC")
 ```
 
 
@@ -253,7 +253,7 @@ table(edy.prediction)
 table(edy.GSE50774$EDY, edy.prediction)
 ```
 
-As we can observe, in the prediciton we have 9 individuals negative for EDY that are also negative with `getEDY`, 0 individuals that are classified as EDY in the prediction but not with `getEDY`, 1 individual that is classified as EDY in `getEDY` but not in the prediction, and another individual that is predicted as EDY but is not classified as so with `getEDY`.
+As we can observe, 10 individuals are negative for EDY both in the prediction and with `getEDY`, 1 individual is positive for EDY both in the prediction and with `getEDY`, 1 individual is classified as EDY with `getEDY` but it is not predicted as so, and there are no individuals predicted as EDY but not classified as so with `getEDY`.
 
 We also can observe that some individuals can not be predicted because there are NAs in the methylaltion matrix that impede the prediction. We could remove this NAs but in that case, the available CpGs would be too few for the algorithm to do the calculations. 
 
