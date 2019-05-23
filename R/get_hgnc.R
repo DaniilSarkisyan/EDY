@@ -1,24 +1,24 @@
-#' Obtaining hgnc symbol.
+#' Obtaining HUGO gene nomenclature committee (hgnc) symbol from genBank
+#' accession numbers, entrezgenes (NCBI gene IDs), RefReq IDs, UniProt IDs or
+#' Ensembl stable IDs.
 #'
-#' Get HUGO gene nomenclature committee (hgnc) symbol as well as the start and
-#' end position of the gene and the chromosome name from genBank accession
-#' numbers, entrezgenes (NCBI gene IDs) or Ensembl stable IDs.
 #' @title Get hgnc symbol
-#' @param x An ExpressionSet.
+#' @param x An ExpressionSet, a RangedSummarizedExperiment or a vector of IDs.
 #' @param key.type A string indicating the type of gene ID that we want to get
-#'   hgnc symbol from. It must be one of \code{'ENTREZID', 'EXONID',
-#'   'GENEBIOTYPE', 'GENEID', 'GENENAME', 'PROTDOMID', 'PROTEINDOMAINID',
-#'   'PROTEINDOMAINSOURCE', 'PROTEINID', 'SEQNAME', 'SEQSTRAND', 'SYMBOL',
-#'   'TXBIOTYPE', 'TXID', 'TXNAME', 'UNIPROTID' and 'GENBANK'}.
+#'   hgnc symbol from. It must be one of \code{refseq, uniprot, ensembl,
+#'   entrezgene} or \code{genbank}.
 #' @param key.col A string indicating the name of the column that contains the
 #'   \code{key.type} in the table of features of the ExpressionSet (accessed by
-#'   \code{fData}).
+#'   \code{fData}) or in the metadata of the rows in the
+#'   RangedSummarizedExperiment (accessed by \code{rowData}).
 #' 
 #' @import org.Hs.eg.db
-#' @import EnsDb.Hsapiens.v86
 #' @export get_hgnc 
-#' @return An \code{ExpressionSet} containing the previous information in
-#'   \code{x} plus the column \code{hgnc_symbol} containing the gene symbols.
+#' @return In case \code{x} is a vector, the output is another vector with the
+#'   hgnc symbols and the query IDs as names. Otherwise, the output is an
+#'   \code{ExpressionSet} or \code{RangedSummarizedExperiment} containing the
+#'   previous information in \code{x} plus the column \code{hgnc_symbol}
+#'   containing the gene symbols.
 
 get_hgnc <- function(x, key.type, key.col, ...){
   
@@ -42,58 +42,60 @@ get_hgnc <- function(x, key.type, key.col, ...){
                                           keys = query, 
                                           keytype = key.type,
                                           columns = c(key.type, "SYMBOL"))
+    rowData(x)$id.feature <- rownames(assay(x))
+    query <- rowData(x)[, key.col]
+  } else if (is.vector(x)){
+    query <- x
+  } else {
+      stop("Invalid argument 'x'. It must be a vector, an ExpressionSet or a RangedSummarizedExperiment")
+    }
+  
+  key.type <- tolower(key.type)
+  key.types <- c("refseq", "uniprot", "ensembl", "entrezgene" )
+  
+  if (!(key.type%in%key.types) && key.type!="genbank"){
+    stop("Invalid key.type. Allowed choices are: 'refseq', 'uniprot', 'ensembl', 'entrezgene' 
+         and 'genbank'")
+  }
+  #Get entrezgene from id
+  else if (key.type%in%key.types){
+    dictionary <- EDY::genome.annot$hgnc_symbol
+    names(dictionary) <- EDY::genome.annot[, key.type]
+    hgnc_symbol <- unname(dictionary[query])
     #Join to fData
     if (object.type == "ExpressionSet"){
-      fData(x) <- merge(hgnc_symbols, fData(x), by.x = key.type, by.y = key.col)
-      number <- which(names(fData(x))=="SYMBOL")
-      names(fData(x))[number] <- "hgnc_symbol"
-      #Delete duplicated
-      fData(x) <- fData(x)[!duplicated(fData(x)[, key.type]),]
+      fData(x) <- cbind(hgnc_symbol, fData(x))
     } else if (object.type == "RangedSummarizedExperiment"){
-      colData(x) <- merge(hgnc_symbols, colData(x), by.x = key.type, by.y = key.col)
-      number <- which(names(colData(x))=="SYMBOL")
-      names(colData(x))[number] <- "hgnc_symbol"
-      #Delete duplicated
-      colData(x) <- colData(x)[!duplicated(colData(x)[, key.type]),]
+      rowData(x) <- cbind(hgnc_symbol, rowData(x))
+    } else {
+      x <- dictionary[query]
       }
     }
-  else if (key.type=="GENBANK"){ 
+  else if (key.type=="genbank"){ 
       list_entrez_id <- as.list(org.Hs.egACCNUM2EG) 
-  
-      id_entrezgenes <- list_entrez_id[query]
-      id_entrezgenes <- id_entrezgenes[!is.na(names(id_entrezgenes))]
-    
-      id <- names(id_entrezgenes)
-    
-      entrezgenes <- c()
-      for (i in 1:length(id_entrezgenes)){
-        entrezgenes[i] <- id_entrezgenes[[i]]
-      }
       
-      matrix_entr_id <- matrix(c(entrezgenes, id), ncol = 2)
-      colnames(matrix_entr_id) <- c("ENTREZID", key.col)
+      GB.ids <- names(list_entrez_id)  
+      dictionary <- unlist(list_entrez_id)
+      names(dictionary) <- GB.ids
+    
+      entrezgenes <- unname(dictionary[query])
       
       hgnc_symbols <- AnnotationDbi::select(EnsDb.Hsapiens.v86, 
                                             keys = entrezgenes, 
                                             keytype = "ENTREZID",
                                             columns = c("ENTREZID", "SYMBOL"))
-      
-      #Join to previous matrix
-      matrix_entr_id <- merge(hgnc_symbols, matrix_entr_id, by.x = "ENTREZID", by.y ="ENTREZID")
+      dictionary2 <- EDY::genome.annot$hgnc_symbol
+      names(dictionary2) <- EDY::genome.annot$entrezgene
+      hgnc_symbol <- unname(dictionary2[entrezgenes])
+     
       #Join to fData
       if (object.type == "ExpressionSet"){
-        fData(x) <- merge(matrix_entr_id, fData(x), by.x = key.col, by.y = key.col)
-        number <- which(names(fData(x))=="SYMBOL")
-        names(fData(x))[number] <- "hgnc_symbol"
-        #Delete duplicated
-        fData(x) <- fData(x)[!duplicated(fData(x)[, "ENTREZID"]),]
-      } else if (object.type == "RangedSummarizedExperiment"){
-        colData(x) <- merge(matrix_entr_id, colData(x), by.x = key.col, by.y = key.col)
-        number <- which(names(colData(x))=="SYMBOL")
-        names(colData(x))[number] <- "hgnc_symbol"
-        #Delete duplicated
-        colData(x) <- colData(x)[!duplicated(colData(x)[, "ENTREZID"]),]
-      }
+        fData(x) <- cbind(hgnc_symbol, fData(x))
+        } else if (object.type == "RangedSummarizedExperiment"){
+        rowData(x) <- cbind(hgnc_symbol, rowData(x))
+        } else {
+          x <- dictionary2[entrezgenes]
+        }
   }
   
   #output

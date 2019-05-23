@@ -8,8 +8,8 @@
 #' @return A scatter plot in which \code{y axis} represents mean gene expression
 #'   in chromosome Y divided by mean gene expression in the rest of the genome
 #'   and each dot represents an individual. Individuals with extreme
-#'   downregulation of chromosome Y are coloured in red and labeled
-#'   with their identifiers. Normal individuals are coloured in blue. The dashed
+#'   downregulation of chromosome Y are coloured in light blue and labeled
+#'   with their identifiers. Normal individuals are coloured in red. The dashed
 #'   line indicates the threshold from which down EDY is considered.
 
 plot.EDY <- function(x, ...){

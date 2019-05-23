@@ -2,15 +2,17 @@
 #' from methylation data
 #'
 #' Predicts individuals' EDY status
-#' @title predictEDY
-#' @param x A matrix with CpGs in rows, samples in columns and 
-#' CpG names in the rowname or a data.frame with individuals/samples
-#' in columns, being the first column the CpG name or an ExpressionSet
+#' @title EDY prediction
+#' @param x An ExpressionSet \emph{or} a matrix with CpGs in rows, samples in columns and
+#'   CpG names in the rowname \emph{or} a data.frame with individuals/samples in
+#'   columns, being the first column the CpG name.
 #' @import Biobase
 #' @import caret
 #' @import tidyverse
 #' @export predictEDY
-#' @return A vector with EDY status (No, Yes).
+#' @return A vector with EDY status (No, Yes) or, in case 'x' is an
+#'   ExpressionSet, the same ExpressionSet with a new column in \code{pData}
+#'   named \code{edy.pred} which contains the EDY status prediction.
 #' 
 predictEDY <- function(x, ...){
   if (is.matrix(x)) {
@@ -52,7 +54,13 @@ predictEDY <- function(x, ...){
   cat(paste0("      CI95% : (", accuracy[3], ", ", accuracy[4], ")\n"))
   
   edy.pred <- mod %>% predict(x.sel, type="class") %>% as.factor()
-  names(edy.pred) <- rownames(x.sel)
-  return(edy.pred)
+  
+  if (inherits(x, "ExpressionSet")){
+    pData(x) <- cbind(pData(x), edy.pred)
+    return(x)
+  } else {
+    names(edy.pred) <- rownames(x.sel)
+    return(edy.pred)
+  }
 }
   
