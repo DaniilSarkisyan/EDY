@@ -32,14 +32,16 @@ get_hgnc <- function(x, key.type, key.col, ...){
   }
   query <- query[!is.na(query)]
   key.type <- toupper(key.type)
-  key.types <- keytypes(EnsDb.Hsapiens.v86)
+  key.types <- AnnotationDbi::keytypes(EnsDb.Hsapiens.v86)
   if (!(key.type%in%key.types) && key.type!="GENBANK"){
     stop("Invalid key.id. Allowed choices are: 'ENTREZID', 'EXONID', 'GENEBIOTYPE', 'GENEID', 'GENENAME', 'PROTDOMID', 'PROTEINDOMAINID', 'PROTEINDOMAINSOURCE', 'PROTEINID', 'SEQNAME', 'SEQSTRAND', 'SYMBOL', 'TXBIOTYPE', 'TXID', 'TXNAME', 'UNIPROTID' and 'GENBANK'")
   }
   #Get entrezgene from id
   else if (key.type%in%key.types){
-    hgnc_symbols <- select(EnsDb.Hsapiens.v86, keys = query, keytype = key.type,
-           columns = c(key.type, "SYMBOL"))
+    hgnc_symbols <- AnnotationDbi::select(EnsDb.Hsapiens.v86, 
+                                          keys = query, 
+                                          keytype = key.type,
+                                          columns = c(key.type, "SYMBOL"))
     #Join to fData
     if (object.type == "ExpressionSet"){
       fData(x) <- merge(hgnc_symbols, fData(x), by.x = key.type, by.y = key.col)
@@ -71,8 +73,10 @@ get_hgnc <- function(x, key.type, key.col, ...){
       matrix_entr_id <- matrix(c(entrezgenes, id), ncol = 2)
       colnames(matrix_entr_id) <- c("ENTREZID", key.col)
       
-      hgnc_symbols <- select(EnsDb.Hsapiens.v86, keys = entrezgenes, keytype = "ENTREZID",
-                             columns = c("ENTREZID", "SYMBOL"))
+      hgnc_symbols <- AnnotationDbi::select(EnsDb.Hsapiens.v86, 
+                                            keys = entrezgenes, 
+                                            keytype = "ENTREZID",
+                                            columns = c("ENTREZID", "SYMBOL"))
       
       #Join to previous matrix
       matrix_entr_id <- merge(hgnc_symbols, matrix_entr_id, by.x = "ENTREZID", by.y ="ENTREZID")
