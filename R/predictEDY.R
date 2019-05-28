@@ -39,7 +39,7 @@ predictEDY <- function(x, ...){
   mod <- glmnet::glmnet(x = train.subset,
                         y = EDY::train[,1],
                         family="binomial",
-                        alpha=0.5, lambda=0.02)
+                        alpha = 0.2, lambda = 0.02403319)
   edy.test <- mod %>% predict(as.matrix(EDY::test[,sel]), 
                             type="class") %>% as.factor()
   
