@@ -1,5 +1,5 @@
 #' Obtaining HUGO gene nomenclature committee (hgnc) symbol from genBank
-#' accession numbers, entrezgenes (NCBI gene IDs), RefReq IDs, UniProt IDs or
+#' accession numbers, entrezgenes (NCBI gene IDs), RefSeq IDs, UniProt IDs or
 #' Ensembl stable IDs.
 #'
 #' @title Get hgnc symbol
