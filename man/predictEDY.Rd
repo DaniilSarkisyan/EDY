@@ -21,5 +21,7 @@ Prediction of Extreme Downregulation of chromosome Y (EDY)
 from methylation data
 }
 \details{
-Predicts individuals' EDY status
+Predicts individuals' EDY status using an Elastic Net Model with parameters
+\emph{alpha}=0.2 and \emph{lambda}=0.02403319.It is trained and tested with
+data from the TCGA.
 }
