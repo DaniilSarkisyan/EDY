@@ -8,6 +8,7 @@
 #' @param x An ExpressionSet \emph{or} a matrix with CpGs in rows, samples in columns and
 #'   CpG names in the rowname \emph{or} a data.frame with individuals/samples in
 #'   columns, being the first column the CpG name.
+#' @param toBetas Should values be changed to betas?   
 #' @import Biobase
 #' @import caret
 #' @import tidyverse
@@ -16,7 +17,7 @@
 #'   ExpressionSet, the same ExpressionSet with a new column in \code{pData}
 #'   named \code{edy.pred} which contains the EDY status prediction.
 #' 
-predictEDY <- function(x, ...){
+predictEDY <- function(x, toBetas=FALSE, ...){
   if (is.matrix(x)) {
     sel <- intersect(rownames(x), colnames(EDY::train))
     x.sel <- t(x[sel, ])
@@ -37,6 +38,17 @@ predictEDY <- function(x, ...){
     warning("There are missing values in the Y chromosome. \n These will be imputed")
     x.sel <- impute::impute.knn(x.sel)$data
   }
+  
+  if (any(x.sel>1 | x.sel<0))
+    warning("Check whether you have beta values. If there are M values, use toBeta=TRUE")
+  
+  if (toBetas){
+    toBeta <- function (m) {
+      2^m/(2^m + 1)
+    }
+    cpgs <- toBeta(cpgs)
+  }
+  
   
   if (length(sel) < 20){
     stop("There are few or no CpGs in chromosome Y")
