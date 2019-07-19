@@ -33,6 +33,11 @@ predictEDY <- function(x, ...){
     stop("'x' must be a matrix, data.frame or an ExpressionSet")
   }
   
+  if (any(is.na(x.sel))){
+    warning("There are missing values in the Y chromosome. \n These will be imputed")
+    x.sel <- impute::impute.knn(x.sel)$data
+  }
+  
   if (length(sel) < 20){
     stop("There are few or no CpGs in chromosome Y")
     }

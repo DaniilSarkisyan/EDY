@@ -1,7 +1,7 @@
 Package: EDY
 Type: Package
 Title: Analysis of extreme downregulation of chromosome Y (EDY)
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(person("Gema", "Rojas", , "gemarojasgranado@gmail.com", role = "aut"),
   person("Alejandro", "Cáceres", , "alejandro.caceres@isglobal.org", role = "aut"),
   person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = c("aut", "cre")))
@@ -9,7 +9,7 @@ Description: Detection of individuals with EDY and some helpful
     functions to prepare the data for the detection.
 License: MIT license
 Depends: R (>= 3.5.0)
-Imports: org.Hs.eg.db, Biobase, glmnet, ggplot2, caret, tidyverse
+Imports: org.Hs.eg.db, Biobase, glmnet, ggplot2, caret, tidyverse, impute
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
