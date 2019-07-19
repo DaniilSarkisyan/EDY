@@ -46,7 +46,7 @@ predictEDY <- function(x, toBetas=FALSE, ...){
     toBeta <- function (m) {
       2^m/(2^m + 1)
     }
-    cpgs <- toBeta(cpgs)
+    x.sel <- toBeta(x.sel)
   }
   
   
