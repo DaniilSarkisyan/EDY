@@ -30,9 +30,6 @@
 #'   \code{rowData}).
 #' @param coef Numerical. Value to consider an outlier when calling getEDY. Default
 #'   correspond to 1.2 which keeps 5\% of data in the normal case.
-#' @param log Logical. It is set to \code{TRUE} if the gene expression values
-#'   are given in a logarithmic scale in the data set and \code{FALSE}
-#'   otherwise. Default is \code{TRUE}.
 #' @param group.var A string indicating the name of the column that contains the
 #'   information about whether the individual is case or control (accessed by
 #'   \code{pData} or \code{colData}).
@@ -59,17 +56,15 @@
 #'   }
 
 getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2, 
-                   log = TRUE, group.var, control.key, experiment.type, ...){
+                   group.var, control.key, experiment.type, ...){
   
-  object.type <- tolower(class(x)[1])
-  experiment.type <- tolower(experiment.type)
   
-  if (experiment.type!="microarray" && experiment.type!="rnaseq"){
-    stop("Invalid experiment.type. Allowed types are 'microarray' or 'RNAseq'")
-  }
+  exp.type <- charmatch(experiment.type, 
+                               c("microarray", "RNAseq"))
+  if (is.na(exp.type))
+    stop("Invalid 'experiment.type' argument. Allowed types are 'microarray' or 'RNAseq'")
   
-  if (object.type == "expressionset"){
-    
+  if (inherits(x, "ExpressionSet")){
       #Filter males in the expression set
       if (!missing(gender.var)) {
         ii <- which(varLabels(x)==gender.var)
@@ -96,9 +91,9 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
       exprRef <- exprRef[complete.cases(exprRef),]
       
   }
-  else if (object.type == "rangedsummarizedexperiment"){
+  else if (inherits(x, "RangedSummarizedExperiment")){
     
-    #Filter males in the expression set
+    #Filter males in the set
     if (!missing(gender.var)){
       ii <- which(names(colData(x)) == gender.var)
       x <- x[, !is.na(colData(x)[, ii])]
@@ -126,32 +121,23 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
   }
   
   #Apply EDY formulae: 
-  if (experiment.type=="rnaseq"){
-    
-    if (log) {
-      Ry <- sweep((exprY), 2, FUN="-", 
-                  apply((exprRef), 2, mean))
-      }else{ 
-        Ry <- sweep(log2(exprY+1), 2, FUN="-", 
-                  apply(log2(exprRef+1), 2, mean))}
-    } else if (experiment.type == "microarray"){
-        if (log) {
-        Ry <- sweep(exprY, 2, FUN="-", 
-                  apply(exprRef, 2, mean))
-      }else{ 
-        Ry <- sweep(log2(exprY), 2, FUN="-", 
-                  apply(log2(exprRef), 2, mean))
-      }
-    }
-  
-  
+  if (exp.type==1){ # microarray
+    Ry <- sweep(exprY, 2, FUN="-", 
+                apply(exprRef, 2, mean))
+  }
+  else if (exp.type == 2){ # RNAseq
+    Ry <- sweep(log2(exprY+1), 2, FUN="-", 
+                apply(log2(exprRef+1), 2, mean))
+  }
+
   EDYcontinuous <- apply(Ry, 2, mean)
   
   if (!missing(group.var)&&!missing(control.key)){
-    if (object.type == "expressionset"){
-    controls <- EDYcontinuous[pData(x)[,group.var]==control.key]
-    } else if (object.type == "rangedsummarizedexperiment"){
-    controls <- EDYcontinuous[colData(x)[,group.var]==control.key]
+    if (inherits(x, "ExpressionSet")){
+      controls <- EDYcontinuous[pData(x)[,group.var]==control.key]
+    } 
+    else if (inherits(x, "RangedSummarizedExperiment")){
+      controls <- EDYcontinuous[colData(x)[,group.var]==control.key]
     }
   } else {
     controls <- EDYcontinuous
@@ -164,12 +150,12 @@ getEDY <- function(x, gender.var, male.key, gene.key, coef=1.2,
   EDY <- relevel(EDY, 2)
   
   #output
-  if (object.type == "expressionset"){
+  if (inherits(x, "ExpressionSet")){
     pData(x)$EDY <- EDY
     names(EDY) <- names(EDYcontinuous)
     ans <- list(EDY=EDY, EDYcontinuous=EDYcontinuous, 
                 threshold=thresh, eSet=x)
-  } else if (object.type == "rangedsummarizedexperiment"){
+  } else if (inherits(x, "RangedSummarizedExperiment")){
     colData(x)$EDY <- EDY
     names(EDY) <- names(EDYcontinuous)
     ans <- list(EDY=EDY, EDYcontinuous=EDYcontinuous, 
